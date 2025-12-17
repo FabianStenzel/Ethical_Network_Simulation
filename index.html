@@ -1,0 +1,45 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title></title>
+    <link rel="stylesheet" href="css/main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/sim.js"></script>
+    <script src="js/ui.js"></script>
+  </head>
+  <body>
+    <aside id="sidebar" class="sidebar">
+      <section id="simSettings" class="simSettings">
+        <section id="modeControl">
+          <h3>App Presets</h3>
+          <button class="radioBtn">Autonomy</button>
+          <button class="radioBtn">Fairness</button>
+          <button class="radioBtn">Empathy</button>
+        </section>
+        <section id="nodeControl">
+          <h3>Node Settings</h3>
+          <h4>Node Amount</h4>
+          <input
+            type="range"
+            name=""
+            id="nodeAmountRange"
+            min="0"
+            max="500"
+            value="2"
+            oninput="sim.initNodes()"
+          />
+        </section>
+      </section>
+      <section id="simControl" class="simControl">
+        <span id="simClock"> 00:00:00 </span>
+        <button class="iconBtn">Play/Pause</button>
+        <button class="iconBtn">Restart</button>
+        <button class="iconBtn">1x</button>
+        <button id="minMax" class="iconButton">Min/Max</button>
+      </section>
+    </aside>
+    <div id="canvasContainer" class="canvasContainer"></div>
+  </body>
+</html>

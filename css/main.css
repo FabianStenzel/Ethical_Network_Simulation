@@ -1,0 +1,62 @@
+
+/* Layout */
+
+body {
+    margin: 0;
+    display: flex;
+}
+
+.sidebar {
+    bottom: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 10px;
+    position: fixed;
+    top: 0;
+    left: 0;
+   
+}
+.simSettings{
+    background-color: lightgray;
+    padding: 20px;
+    height: 100%;
+    border-radius: 10px;
+    display: flex;
+    min-width: 20vw;
+    flex-direction: column;
+}
+.simSettings-close {
+  
+    display: none;
+    width: 0px !important;
+
+}
+
+.simControl{
+    margin-top: auto;
+        padding: 20px;
+        bottom: 0;
+             min-width: 20vw;
+}
+
+
+
+/* Button Interactions */
+
+button {
+    padding: 8px 16px 8px 16px;
+    background-color: white;
+     border: 1px solid black;
+    border-radius: 24px;
+}
+
+.button-active {
+    background-color: black;
+    color: white;
+}
+
+button:not(.button-active):hover {
+    background-color: lightgray;
+    color: black;
+}
