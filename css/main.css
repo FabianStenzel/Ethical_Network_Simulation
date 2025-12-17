@@ -4,6 +4,7 @@
 body {
     margin: 0;
     display: flex;
+    font-family: sans-serif;
 }
 
 .sidebar {
@@ -18,13 +19,13 @@ body {
    
 }
 .simSettings{
-    background-color: lightgray;
+    background-color: rgb(237, 237, 237);
     padding: 20px;
     height: 100%;
     border-radius: 10px;
     display: flex;
-    min-width: 20vw;
     flex-direction: column;
+    width: 20vw;
 }
 .simSettings-close {
   
@@ -37,9 +38,14 @@ body {
     margin-top: auto;
         padding: 20px;
         bottom: 0;
-             min-width: 20vw;
+        
 }
 
+/* Range */
+
+input[type=range]{
+width: 100%;
+}
 
 
 /* Button Interactions */

@@ -28,32 +28,150 @@ class Simulation {
     this.simTime = 0;
     this.timeRatio = 1;
     this.lastTick = millis() / 1000;
+
+    this.mode = null; // gewünschter Modus (A, B, C)
+    this.runningMode = null; // aktuell laufender Modus
+    this.intervalId = null; // aktives Intervall
   }
   initNodes() {
+    this.switchMode();
     this.nodes = [];
     for (let i = 0; i < nodeAmountRange.value; i++) {
       this.nodes.push(new Node(i, random(width), random(height)));
     }
     this.messages = [];
   }
-  addMessage(from, lifetime) {
-    for (let i = 0; i < this.nodes.length; i++) {
-      this.messages.push(new Message(from, [i], this.simTime, lifetime));
-    }
-  }
+
   cleanupMessages() {
     this.messages = this.messages.filter(
       (msg) => this.simTime < msg.createdAt + msg.lifetime
     );
   }
   behavior() {
-    sim.addMessage(1, 5);
-    setInterval(function () {
-      let id = Math.floor(random(1, sim.nodes.length));
-      sim.addMessage(id, 5);
-      console.log(nodeAmountRange.value);
+    if (this.mode !== this.runningMode) {
+      this.switchMode(this.mode);
+    }
+  }
+  switchMode(mode) {
+    // altes Intervall stoppen
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
+
+    if (mode === "A") this.startModeA();
+    if (mode === "B") this.startModeB();
+    if (mode === "C") this.startModeC();
+
+    this.runningMode = mode;
+  }
+
+  startModeA() {
+    //Fairness
+    fill(100, 150, 255);
+    this.messages = [];
+    for (let i = 0; i < this.nodes.length; i++) {
+      this.messages.push(new Message(1, [i], this.simTime, 5));
+    }
+
+    this.intervalId = setInterval(() => {
+      let id = floor(random(this.nodes.length));
+      for (let i = 0; i < this.nodes.length; i++) {
+        this.messages.push(new Message(id, [i], this.simTime, 5));
+      }
     }, 5000);
   }
+
+  startModeB() {
+    //Autonomie
+    fill(15, 150, 25);
+    this.messages = [];
+    let id = floor(random(this.nodes.length));
+
+    for (let i = 0; i < floor(random(this.nodes.length / 4)); i++) {
+      this.messages.push(
+        new Message(
+          id,
+          [floor(random(this.nodes.length))],
+          this.simTime,
+          floor(random(120))
+        )
+      );
+    }
+
+    this.intervalId = setInterval(() => {
+      let id = floor(random(this.nodes.length));
+
+      for (let i = 0; i < floor(random(this.nodes.length / 20)); i++) {
+        this.messages.push(
+          new Message(
+            id,
+            [floor(random(this.nodes.length))],
+            this.simTime,
+            floor(random(120))
+          )
+        );
+      }
+    }, 10000 / this.nodes.length);
+  }
+
+  startModeC() {
+    //Empathie
+    fill(10, 15, 25);
+    this.messages = [];
+    let id = floor(random(this.nodes.length));
+
+    for (let i = 0; i < floor(random(this.nodes.length / 4)); i++) {
+      let id2 = floor(random(this.nodes.length));
+      let lifetime = floor(random(120));
+      this.messages.push(new Message(id, [id2], this.simTime, lifetime));
+
+      if (floor(random(2)) == floor(random(2))) {
+        setTimeout(() => {
+          this.messages.push(new Message(id2, [id], this.simTime, lifetime));
+        }, 10000 / this.nodes.length);
+      }
+    }
+
+    this.intervalId = setInterval(() => {
+      let id = floor(random(this.nodes.length));
+      for (let i = 0; i < floor(random(this.nodes.length / 20)); i++) {
+        let id2 = floor(random(this.nodes.length));
+        let lifetime = floor(random(120));
+        this.messages.push(new Message(id, [id2], this.simTime, lifetime));
+
+        if (floor(random(2)) == floor(random(2))) {
+          setTimeout(() => {
+            this.messages.push(new Message(id2, [id], this.simTime, lifetime));
+          }, 10000 / this.nodes.length);
+        }
+      }
+    }, 10000 / this.nodes.length);
+  }
+
+  update() {
+    this.behavior();
+    this.physics();
+    this.cleanupMessages();
+
+    //update Clock
+    let now = millis() / 1000;
+    let dt = now - this.lastTick;
+    this.lastTick = now;
+    dt *= this.timeRatio;
+    this.simTime += dt;
+    this.simTime %= 24 * 3600;
+
+    const t = floor(this.simTime);
+    const h = floor(t / 3600);
+    const m = floor((t % 3600) / 60);
+    const s = t % 60;
+    const pad = (v) => v.toString().padStart(2, "0");
+    document.getElementById("simClock").innerText = `${pad(h)}:${pad(m)}:${pad(
+      s
+    )}`;
+  }
+
   physics() {
     const damping = 0.98;
     const repulsionRadius = 60;
@@ -118,29 +236,6 @@ class Simulation {
     }
   }
 
-  update() {
-    // this.behavior();
-    this.physics();
-    this.cleanupMessages();
-
-    //update Clock
-    let now = millis() / 1000;
-    let dt = now - this.lastTick;
-    this.lastTick = now;
-    dt *= this.timeRatio;
-    this.simTime += dt;
-    this.simTime %= 24 * 3600;
-
-    const t = floor(this.simTime);
-    const h = floor(t / 3600);
-    const m = floor((t % 3600) / 60);
-    const s = t % 60;
-    const pad = (v) => v.toString().padStart(2, "0");
-    document.getElementById("simClock").innerText = `${pad(h)}:${pad(m)}:${pad(
-      s
-    )}`;
-  }
-
   draw() {
     for (let m of this.messages) {
       stroke(100);
@@ -151,9 +246,21 @@ class Simulation {
           this.nodes[t].pos.x,
           this.nodes[t].pos.y
         );
+
+        push(); //start new drawing state
+        fill(100);
+        let offset = 24;
+        let angle = atan2(
+          this.nodes[m.from].pos.y - this.nodes[t].pos.y,
+          this.nodes[m.from].pos.x - this.nodes[t].pos.x
+        ); //gets the angle of the line
+        translate(this.nodes[t].pos.x, this.nodes[t].pos.y); //translates to the destination vertex
+        rotate(angle - HALF_PI); //rotates the arrow point
+        triangle(-offset * 0.5, offset, offset * 0.5, offset, 0, -offset / 2); //draws the arrow point as a triangle
+        pop();
       }
     }
-    fill(100, 150, 255);
+
     noStroke();
     for (let n of this.nodes) {
       ellipse(n.pos.x, n.pos.y, n.radius * 2);

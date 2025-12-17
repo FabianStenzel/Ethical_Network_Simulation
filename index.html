@@ -14,9 +14,9 @@
       <section id="simSettings" class="simSettings">
         <section id="modeControl">
           <h3>App Presets</h3>
-          <button class="radioBtn">Autonomy</button>
-          <button class="radioBtn">Fairness</button>
-          <button class="radioBtn">Empathy</button>
+          <button id="btnA" class="radioBtn">Fairness</button>
+          <button id="btnF" class="radioBtn">Autonomy</button>
+          <button id="btnE" class="radioBtn">Empathy</button>
         </section>
         <section id="nodeControl">
           <h3>Node Settings</h3>
@@ -30,14 +30,34 @@
             value="2"
             oninput="sim.initNodes()"
           />
+          <h4>connectivity</h4>
+          <input
+            type="range"
+            name=""
+            id=""
+            min="0"
+            max="500"
+            value="2"
+            oninput="sim.initNodes()"
+          />
+          <h4>Attention Span</h4>
+          <input
+            type="range"
+            name=""
+            id=""
+            min="0"
+            max="500"
+            value="2"
+            oninput="sim.initNodes()"
+          />
         </section>
       </section>
       <section id="simControl" class="simControl">
-        <span id="simClock"> 00:00:00 </span>
-        <button class="iconBtn">Play/Pause</button>
-        <button class="iconBtn">Restart</button>
-        <button class="iconBtn">1x</button>
         <button id="minMax" class="iconButton">Min/Max</button>
+        <button class="iconBtn" onclick="sim.initNodes()">Restart</button>
+        <button class="iconBtn">Play/Pause</button>
+        <button class="iconBtn">1x</button>
+        <span id="simClock" style="padding: 20px"> 00:00:00 </span>
       </section>
     </aside>
     <div id="canvasContainer" class="canvasContainer"></div>

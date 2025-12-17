@@ -6,11 +6,14 @@ function setup() {
   sim = new Simulation();
   setupUI();
   sim.initNodes();
-  sim.behavior();
+  // sim.behavior();
 }
 
 function draw() {
   background(255);
+
+  translate(camX, camY);
+  scale(zoom);
   sim.update();
   sim.draw();
 }
