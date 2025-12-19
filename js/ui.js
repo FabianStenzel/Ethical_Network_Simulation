@@ -8,6 +8,8 @@ function setupUI() {
   btnE.onclick = () => (sim.mode = "C");
 
   const nodeAmountRange = document.querySelector("#nodeAmountRange");
+  const connectivityRange = document.querySelector("#connectivityRange");
+  const attentionRange = document.querySelector("#attentionRange");
   strokeWeight(1);
 
   //setup Interactions

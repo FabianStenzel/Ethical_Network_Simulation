@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title></title>
-    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/sim.css" />
     <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
     <script src="js/main.js"></script>
     <script src="js/sim.js"></script>
@@ -27,27 +27,27 @@
             id="nodeAmountRange"
             min="0"
             max="500"
-            value="2"
+            value="10"
             oninput="sim.initNodes()"
           />
-          <h4>connectivity</h4>
+          <h4>Connectivity</h4>
           <input
             type="range"
             name=""
-            id=""
-            min="0"
-            max="500"
-            value="2"
+            id="connectivityRange"
+            min="1"
+            max="40"
+            value="10"
             oninput="sim.initNodes()"
           />
           <h4>Attention Span</h4>
           <input
             type="range"
             name=""
-            id=""
+            id="attentionRange"
             min="0"
-            max="500"
-            value="2"
+            max="120"
+            value="20"
             oninput="sim.initNodes()"
           />
         </section>
