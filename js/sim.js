@@ -5,7 +5,19 @@ class Node {
     this.pos = createVector(x, y);
     this.vel = createVector();
     this.acc = createVector();
-    this.radius = 10;
+    this.radius = 10; // Basisradius
+    this.attention = 0; // neue Variable
+    this.targetAttention = 0; // zum Smoothen
+  }
+
+  updateRadius() {
+    // smooth interpolation: linear oder eased
+    const eased = easeOutCubic(constrain(this.targetAttention / 20, 0, 1)); // 20 = max scaling factor
+    this.attention = lerp(this.attention, eased * 20, 0.002); // 0.02 = sehr langsames Lerp
+  }
+
+  get displayRadius() {
+    return this.radius + this.attention; // Basis + Aufmerksamkeit
   }
 }
 // --------- Message
@@ -15,9 +27,17 @@ class Message {
     this.to = to;
     this.createdAt = createdAt;
     this.lifetime = lifetime;
+    this.flyDuration = 0.2; // Sekunden für den Flug zum Ziel (kurz)
   }
   alive(simTime) {
     return simTime - this.createdAt < this.lifetime;
+  }
+  getProgress(simTime) {
+    return constrain((simTime - this.createdAt) / this.lifetime, 0, 1);
+  }
+
+  getFlyProgress(simTime) {
+    return constrain((simTime - this.createdAt) / this.flyDuration, 0, 1);
   }
 }
 // --------- Simulation
@@ -34,12 +54,24 @@ class Simulation {
     this.intervalId = null; // aktives Intervall
   }
   initNodes() {
-    this.switchMode();
+    // this.switchMode();
     this.nodes = [];
     for (let i = 0; i < nodeAmountRange.value; i++) {
       this.nodes.push(new Node(i, random(width), random(height)));
     }
     this.messages = [];
+  }
+  updateAttention() {
+    // reset
+    for (let n of this.nodes) n.targetAttention = 0;
+
+    // alle Messages zählen: wie viele von dieser Node gesendet
+    for (let m of this.messages) {
+      this.nodes[m.from].targetAttention += 1; // 1 pro Message, kann skaliert werden
+    }
+
+    // Nodes langsam aktualisieren
+    for (let n of this.nodes) n.updateRadius();
   }
 
   cleanupMessages() {
@@ -49,6 +81,7 @@ class Simulation {
   }
   behavior() {
     if (this.mode !== this.runningMode) {
+      this.initNodes();
       this.switchMode(this.mode);
     }
   }
@@ -181,6 +214,7 @@ class Simulation {
     this.behavior();
     this.physics();
     this.cleanupMessages();
+    sim.updateAttention();
 
     //update Clock
     let now = millis() / 1000;
@@ -307,7 +341,7 @@ class Simulation {
 
     noStroke();
     for (let n of this.nodes) {
-      ellipse(n.pos.x, n.pos.y, n.radius * 2);
+      ellipse(n.pos.x, n.pos.y, n.displayRadius * 2);
     }
   }
 }
@@ -335,4 +369,12 @@ function messageAlpha(msg, simTime) {
   }
 
   return 1;
+}
+
+function easeOutCubic(t) {
+  return 1 - pow(1 - t, 3);
+}
+
+function easeOutQuad(t) {
+  return t * (2 - t); // schneller Start, langsames Abbremsen
 }
