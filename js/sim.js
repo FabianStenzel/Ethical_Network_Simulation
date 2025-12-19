@@ -52,6 +52,8 @@ class Simulation {
     this.mode = null; // gewünschter Modus (A, B, C)
     this.runningMode = null; // aktuell laufender Modus
     this.intervalId = null; // aktives Intervall
+
+    this.hoverNode = null;
   }
   initNodes() {
     // this.switchMode();
@@ -61,6 +63,17 @@ class Simulation {
     }
     this.messages = [];
   }
+  updateHover() {
+    this.hoverNode = null;
+    for (let n of this.nodes) {
+      const d = dist(mouseX, mouseY, n.pos.x, n.pos.y);
+      if (d < n.displayRadius) {
+        this.hoverNode = n;
+        break;
+      }
+    }
+  }
+
   updateAttention() {
     // reset
     for (let n of this.nodes) n.targetAttention = 0;
@@ -159,7 +172,7 @@ class Simulation {
           )
         );
       }
-    }, 10000 / this.nodes.length);
+    }, map(messageRateRange.value, 1, 20000, 20000, 1));
   }
 
   startModeC() {
@@ -183,7 +196,7 @@ class Simulation {
       if (floor(random(2)) == floor(random(2))) {
         setTimeout(() => {
           this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-        }, 10000 / this.nodes.length);
+        }, map(messageRateRange.value, 1, 20000, 20000, 1));
       }
     }
 
@@ -204,10 +217,10 @@ class Simulation {
         if (floor(random(2)) == floor(random(2))) {
           setTimeout(() => {
             this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-          }, 10000 / this.nodes.length);
+          }, map(messageRateRange.value, 1, 20000, 20000, 1));
         }
       }
-    }, 10000 / this.nodes.length);
+    }, map(messageRateRange.value, 1, 20000, 20000, 1));
   }
 
   update() {
@@ -299,6 +312,7 @@ class Simulation {
   }
 
   draw() {
+    sim.updateHover();
     for (let m of this.messages) {
       // if (0 <= m.createdAt + m.lifetime - this.simTime <= 1) {
       //   console.log(m.createdAt + m.lifetime - this.simTime);
@@ -315,12 +329,15 @@ class Simulation {
       fill(100, alpha);
 
       for (let t of m.to) {
-        line(
-          this.nodes[m.from].pos.x,
-          this.nodes[m.from].pos.y,
-          this.nodes[t].pos.x,
-          this.nodes[t].pos.y
-        );
+        const from = this.nodes[m.from];
+        const to = this.nodes[t];
+
+        // --- Flugposition am Anfang
+        const p = easeOutQuad(m.getFlyProgress(this.simTime));
+        const x = lerp(from.pos.x, to.pos.x, p);
+        const y = lerp(from.pos.y, to.pos.y, p);
+        line(from.pos.x, from.pos.y, x, y);
+
         //verblassen animation zum Ende
         //Visuell greifbarer machen
         //Pfeil in die richtung bewegen
@@ -328,13 +345,10 @@ class Simulation {
         //start new drawing state
 
         let offset = 16;
-        let angle = atan2(
-          this.nodes[m.from].pos.y - this.nodes[t].pos.y,
-          this.nodes[m.from].pos.x - this.nodes[t].pos.x
-        ); //gets the angle of the line
-        translate(this.nodes[t].pos.x, this.nodes[t].pos.y); //translates to the destination vertex
-        rotate(angle - HALF_PI); //rotates the arrow point
-        triangle(-offset * 0.5, offset, offset * 0.5, offset, 0, -offset / 2); //draws the arrow point as a triangle
+        const angle = atan2(from.pos.y - y, from.pos.x - x);
+        translate(x, y);
+        rotate(angle - HALF_PI);
+        triangle(-offset * 0.5, offset, offset * 0.5, offset, 0, -offset / 2);
         pop();
       }
     }

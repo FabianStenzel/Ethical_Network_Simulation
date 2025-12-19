@@ -10,6 +10,7 @@ function setupUI() {
   const nodeAmountRange = document.querySelector("#nodeAmountRange");
   const connectivityRange = document.querySelector("#connectivityRange");
   const attentionRange = document.querySelector("#attentionRange");
+  const messageRateRange = document.querySelector("#messageRateRange");
   strokeWeight(1);
 
   //setup Interactions
