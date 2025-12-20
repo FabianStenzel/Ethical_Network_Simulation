@@ -49,28 +49,18 @@ class Simulation {
     this.timeRatio = 1;
     this.lastTick = millis() / 1000;
 
-    this.mode = null; // gewünschter Modus (A, B, C)
+    this.mode = "A"; // gewünschter Modus (A, B, C)
     this.runningMode = null; // aktuell laufender Modus
     this.intervalId = null; // aktives Intervall
-
-    this.hoverNode = null;
   }
+
   initNodes() {
-    // this.switchMode();
+    this.simTime = 0;
+    this.messages = [];
     this.nodes = [];
+    this.switchMode();
     for (let i = 0; i < nodeAmountRange.value; i++) {
       this.nodes.push(new Node(i, random(width), random(height)));
-    }
-    this.messages = [];
-  }
-  updateHover() {
-    this.hoverNode = null;
-    for (let n of this.nodes) {
-      const d = dist(mouseX, mouseY, n.pos.x, n.pos.y);
-      if (d < n.displayRadius) {
-        this.hoverNode = n;
-        break;
-      }
     }
   }
 
@@ -115,33 +105,33 @@ class Simulation {
   startModeA() {
     //Fairness
     fill(100, 150, 255);
-    this.messages = [];
+    // INITIAL MESSAGE
+    let postingCycle = floor(map(this.nodes.length, 0, 500, 10, 1));
+
     for (let i = 0; i < this.nodes.length; i++) {
-      this.messages.push(new Message(1, [i], this.simTime, 5));
+      if (i === 1) continue;
+      this.messages.push(new Message(1, [i], this.simTime, postingCycle));
     }
 
+    // MESSAGE INTERVAL
     this.intervalId = setInterval(() => {
       let id = floor(random(this.nodes.length));
       for (let i = 0; i < this.nodes.length; i++) {
-        this.messages.push(new Message(id, [i], this.simTime, 5));
+        if (i === id) continue;
+        this.messages.push(new Message(id, [i], this.simTime, postingCycle));
       }
-    }, "5000");
+    }, postingCycle * 1000);
   }
 
   startModeB() {
     //Autonomie
     fill(15, 150, 25);
-    this.messages = [];
     let id = floor(random(this.nodes.length));
-
-    for (
-      let i = 0;
-      i <
-      floor(
-        random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
-      );
-      i++
-    ) {
+    let msgPerNode = floor(
+      random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
+    );
+    // INITIAL MESSAGE
+    for (let i = 0; i < msgPerNode; i++) {
       this.messages.push(
         new Message(
           id,
@@ -151,18 +141,14 @@ class Simulation {
         )
       );
     }
-
+    // MESSAGE INTERVAL
     this.intervalId = setInterval(() => {
       let id = floor(random(this.nodes.length));
+      let msgPerNode = floor(
+        random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
+      );
 
-      for (
-        let i = 0;
-        i <
-        floor(
-          random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
-        );
-        i++
-      ) {
+      for (let i = 0; i < msgPerNode; i++) {
         this.messages.push(
           new Message(
             id,
@@ -178,38 +164,31 @@ class Simulation {
   startModeC() {
     //Empathie
     fill(10, 15, 25);
-    this.messages = [];
     let id = floor(random(this.nodes.length));
+    let msgPerNode = floor(
+      random(this.nodes.length / map(connectivityRange.value, 1, 40, 12, 1))
+    );
+    let msgRate = map(messageRateRange.value, 1, 20000, 20000, 1);
 
-    for (
-      let i = 0;
-      i <
-      floor(
-        random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
-      );
-      i++
-    ) {
+    // INITIAL MESSAGE
+    for (let i = 0; i < msgPerNode; i++) {
       let id2 = floor(random(this.nodes.length));
       let lifetime = floor(random(attentionRange.value));
+
       this.messages.push(new Message(id, [id2], this.simTime, lifetime));
 
       if (floor(random(2)) == floor(random(2))) {
         setTimeout(() => {
           this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-        }, map(messageRateRange.value, 1, 20000, 20000, 1));
+        }, msgRate);
       }
     }
+    // MESSAGE INTERVAL
 
     this.intervalId = setInterval(() => {
       let id = floor(random(this.nodes.length));
-      for (
-        let i = 0;
-        i <
-        floor(
-          random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
-        );
-        i++
-      ) {
+
+      for (let i = 0; i < msgPerNode; i++) {
         let id2 = floor(random(this.nodes.length));
         let lifetime = floor(random(attentionRange.value));
         this.messages.push(new Message(id, [id2], this.simTime, lifetime));
@@ -217,10 +196,10 @@ class Simulation {
         if (floor(random(2)) == floor(random(2))) {
           setTimeout(() => {
             this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-          }, map(messageRateRange.value, 1, 20000, 20000, 1));
+          }, msgRate);
         }
       }
-    }, map(messageRateRange.value, 1, 20000, 20000, 1));
+    }, msgRate);
   }
 
   update() {
@@ -249,9 +228,9 @@ class Simulation {
 
   physics() {
     const damping = 0.98;
-    const repulsionRadius = 100;
+    const repulsionRadius = 60;
     const repulsionStrength = 1.2;
-    const messageAttraction = 0.008;
+    const messageAttraction = 0.02;
     const maxSpeed = 4;
 
     // reset acceleration
@@ -308,47 +287,116 @@ class Simulation {
       if (n.pos.y < 0) n.pos.y += height;
       if (n.pos.x > width) n.pos.x -= width;
       if (n.pos.y > height) n.pos.y -= height;
+
+      n.pos.x = constrain(n.pos.x, n.displayRadius, width - n.displayRadius);
+      n.pos.y = constrain(n.pos.y, n.displayRadius, height - n.displayRadius);
     }
   }
 
+  // draw() {
+  //   for (let m of this.messages) {
+  //     // if (0 <= m.createdAt + m.lifetime - this.simTime <= 1) {
+  //     //   stroke(
+  //     //     floor(map(m.createdAt + m.lifetime - this.simTime, 0, 3, 255, 100))
+  //     //   );
+  //     // } else {
+  //     //   stroke(100);
+  //     // }
+  //     const a = messageAlpha(m, this.simTime);
+  //     const alpha = floor(a * 255);
+  //     push();
+  //     stroke(130, alpha);
+  //     fill(130, alpha);
+
+  //     for (let t of m.to) {
+  //       const from = this.nodes[m.from];
+  //       const to = this.nodes[t];
+
+  //       // --- Flugposition am Anfang
+  //       const p = easeOutQuad(m.getFlyProgress(this.simTime));
+  //       const x = lerp(from.pos.x, to.pos.x, p);
+  //       const y = lerp(from.pos.y, to.pos.y, p);
+  //       line(from.pos.x, from.pos.y, x, y);
+
+  //       //verblassen animation zum Ende
+  //       //Visuell greifbarer machen
+  //       //Pfeil in die richtung bewegen
+
+  //       //start new drawing state
+
+  //       let offset = 14;
+  //       let wing = 8;
+
+  //       const angle = atan2(from.pos.y - y, from.pos.x - x);
+
+  //       translate(x, y);
+  //       rotate(angle - PI);
+
+  //       // Chevron ">"
+  //       stroke(130, alpha);
+  //       strokeWeight(2);
+  //       noFill();
+
+  //       line(0, 0, -offset, -wing);
+  //       line(0, 0, -offset, wing);
+
+  //       pop();
+  //     }
+  //   }
+
+  //   noStroke();
+  //   for (let n of this.nodes) {
+  //     ellipse(n.pos.x, n.pos.y, n.displayRadius * 2);
+  //   }
+  // }
   draw() {
-    sim.updateHover();
     for (let m of this.messages) {
-      // if (0 <= m.createdAt + m.lifetime - this.simTime <= 1) {
-      //   console.log(m.createdAt + m.lifetime - this.simTime);
-      //   stroke(
-      //     floor(map(m.createdAt + m.lifetime - this.simTime, 0, 3, 255, 100))
-      //   );
-      // } else {
-      //   stroke(100);
-      // }
       const a = messageAlpha(m, this.simTime);
       const alpha = floor(a * 255);
-      push();
-      stroke(100, alpha);
-      fill(100, alpha);
 
       for (let t of m.to) {
         const from = this.nodes[m.from];
         const to = this.nodes[t];
 
-        // --- Flugposition am Anfang
         const p = easeOutQuad(m.getFlyProgress(this.simTime));
-        const x = lerp(from.pos.x, to.pos.x, p);
-        const y = lerp(from.pos.y, to.pos.y, p);
-        line(from.pos.x, from.pos.y, x, y);
 
-        //verblassen animation zum Ende
-        //Visuell greifbarer machen
-        //Pfeil in die richtung bewegen
+        // Richtung from → to
+        const dx = to.pos.x - from.pos.x;
+        const dy = to.pos.y - from.pos.y;
+        const dist = sqrt(dx * dx + dy * dy);
 
-        //start new drawing state
+        const nx = dx / dist;
+        const ny = dy / dist;
 
-        let offset = 16;
-        const angle = atan2(from.pos.y - y, from.pos.x - x);
-        translate(x, y);
-        rotate(angle - HALF_PI);
-        triangle(-offset * 0.5, offset, offset * 0.5, offset, 0, -offset / 2);
+        // Flugposition
+        const tx = lerp(from.pos.x, to.pos.x, p);
+        const ty = lerp(from.pos.y, to.pos.y, p);
+
+        // Abstand zur Zielnode
+        const padding = to.displayRadius + 2;
+
+        // Linie nur bis kurz vor den Pfeil
+        const lx = tx - nx * padding;
+        const ly = ty - ny * padding;
+
+        stroke(200, alpha);
+        line(from.pos.x, from.pos.y, lx, ly);
+
+        // ---------- Pfeil ----------
+        let offset = 4;
+        let wing = 4;
+
+        push();
+        translate(lx, ly);
+        rotate(atan2(dy, dx));
+
+        strokeWeight(2);
+        noFill();
+
+        // Chevron ">"
+        line(0, 0, -offset, -wing);
+        line(0, 0, -offset, wing);
+
         pop();
       }
     }
@@ -368,7 +416,7 @@ function messageAlpha(msg, simTime) {
   const age = simTime - msg.createdAt;
   const t = constrain(age / msg.lifetime, 0, 1); // 0..1
 
-  const fadePortion = 0.1; // 10 %
+  const fadePortion = 0.01; // 10 %
 
   // fade in
   if (t < fadePortion) {
