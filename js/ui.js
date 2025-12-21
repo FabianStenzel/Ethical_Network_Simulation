@@ -4,8 +4,20 @@ function windowResized() {
 
 function setupUI() {
   document.getElementById("btnA").onclick = () => (sim.mode = "A");
-  btnF.onclick = () => (sim.mode = "B");
-  btnE.onclick = () => (sim.mode = "C");
+  document.getElementById("btnF").onclick = () => (sim.mode = "B");
+  document.getElementById("btnE").onclick = () => (sim.mode = "C");
+
+  const timeRatioButton = document.getElementById("timeRatio");
+  let timeRatio = 1;
+  timeRatioButton.addEventListener("click", function (e) {
+    timeRatio = timeRatio * 2;
+    if (timeRatio > 10) {
+      timeRatio = 0.25;
+    }
+    timeRatioButton.innerHTML = `${timeRatio}x`;
+    // sim.timeRatio = timeRatio;
+    sim.switchMode(sim.mode);
+  });
 
   const nodeAmountRange = document.querySelector("#nodeAmountRange");
   const connectivityRange = document.querySelector("#connectivityRange");

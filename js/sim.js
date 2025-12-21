@@ -98,12 +98,12 @@ class Simulation {
     if (mode === "A") this.startModeA();
     if (mode === "B") this.startModeB();
     if (mode === "C") this.startModeC();
-
     this.runningMode = mode;
   }
-
+  // –––––––––––––––––––––– MODE A    //Fairness
   startModeA() {
-    //Fairness
+    this.messages = [];
+
     fill(100, 150, 255);
     // INITIAL MESSAGE
     let postingCycle = floor(map(this.nodes.length, 0, 500, 10, 1));
@@ -122,65 +122,64 @@ class Simulation {
       }
     }, postingCycle * 1000);
   }
-
+  // –––––––––––––––––––––– MODE B    //Autonomie
   startModeB() {
-    //Autonomie
     fill(15, 150, 25);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
-      random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
+      random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length))
     );
+    let postingCycle = map(messageRateRange.value, 0, 100, 3000, 10);
+
     // INITIAL MESSAGE
     for (let i = 0; i < msgPerNode; i++) {
+      let msgLifeTime = floor(random(attentionRange.value));
+
       this.messages.push(
         new Message(
           id,
           [floor(random(this.nodes.length))],
           this.simTime,
-          floor(random(attentionRange.value))
+          msgLifeTime
         )
       );
     }
     // MESSAGE INTERVAL
     this.intervalId = setInterval(() => {
       let id = floor(random(this.nodes.length));
-      let msgPerNode = floor(
-        random(this.nodes.length / map(connectivityRange.value, 1, 40, 4, 1))
-      );
-
       for (let i = 0; i < msgPerNode; i++) {
+        let msgLifeTime = floor(random(1, attentionRange.value));
         this.messages.push(
           new Message(
             id,
             [floor(random(this.nodes.length))],
             this.simTime,
-            floor(random(attentionRange.value))
+            msgLifeTime
           )
         );
       }
-    }, map(messageRateRange.value, 1, 20000, 20000, 1));
+    }, postingCycle);
   }
-
+  // –––––––––––––––––––––– MODE C //Empathie
   startModeC() {
-    //Empathie
     fill(10, 15, 25);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
-      random(this.nodes.length / map(connectivityRange.value, 1, 40, 12, 1))
+      random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length))
     );
-    let msgRate = map(messageRateRange.value, 1, 20000, 20000, 1);
+    let postingCycle = map(messageRateRange.value, 0, 100, 3000, 100);
 
     // INITIAL MESSAGE
     for (let i = 0; i < msgPerNode; i++) {
       let id2 = floor(random(this.nodes.length));
-      let lifetime = floor(random(attentionRange.value));
+      let msgLifeTime = floor(random(1, attentionRange.value));
 
-      this.messages.push(new Message(id, [id2], this.simTime, lifetime));
+      this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
 
       if (floor(random(2)) == floor(random(2))) {
         setTimeout(() => {
-          this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-        }, msgRate);
+          this.messages.push(new Message(id2, [id], this.simTime, msgLifeTime));
+        }, postingCycle);
       }
     }
     // MESSAGE INTERVAL
@@ -190,16 +189,20 @@ class Simulation {
 
       for (let i = 0; i < msgPerNode; i++) {
         let id2 = floor(random(this.nodes.length));
-        let lifetime = floor(random(attentionRange.value));
-        this.messages.push(new Message(id, [id2], this.simTime, lifetime));
+        let msgLifeTime = floor(1, random(attentionRange.value));
+        this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
 
         if (floor(random(2)) == floor(random(2))) {
           setTimeout(() => {
-            this.messages.push(new Message(id2, [id], this.simTime, lifetime));
-          }, msgRate);
+            // for (let i = 0; i < msgPerNode; i++) {
+            this.messages.push(
+              new Message(id2, [i], this.simTime, msgLifeTime)
+            );
+            // }
+          }, postingCycle);
         }
       }
-    }, msgRate);
+    }, postingCycle);
   }
 
   update() {
@@ -229,7 +232,7 @@ class Simulation {
   physics() {
     const damping = 0.98;
     const repulsionRadius = 60;
-    const repulsionStrength = 1.2;
+    const repulsionStrength = 1.08;
     const messageAttraction = 0.02;
     const maxSpeed = 4;
 
@@ -379,7 +382,7 @@ class Simulation {
         const lx = tx - nx * padding;
         const ly = ty - ny * padding;
 
-        stroke(200, alpha);
+        stroke(100, alpha);
         line(from.pos.x, from.pos.y, lx, ly);
 
         // ---------- Pfeil ----------
