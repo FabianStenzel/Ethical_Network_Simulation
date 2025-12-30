@@ -41,6 +41,10 @@ body {
         
 }
 
+.range-deactive {
+    display: none;
+}
+
 /* Range */
 
 input[type=range]{

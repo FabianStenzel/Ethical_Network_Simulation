@@ -19,10 +19,23 @@ function setupUI() {
     sim.switchMode(sim.mode);
   });
 
+  const timeToggleButton = document.getElementById("timeToggle");
+
+  timeToggleButton.addEventListener("click", function (e) {
+    if (!sim.play) {
+      sim.play = true;
+      console.log(sim.play);
+    } else {
+      sim.play = false;
+      console.log(`else${sim.play}`);
+    }
+  });
+
   const nodeAmountRange = document.querySelector("#nodeAmountRange");
   const connectivityRange = document.querySelector("#connectivityRange");
   const attentionRange = document.querySelector("#attentionRange");
   const messageRateRange = document.querySelector("#messageRateRange");
+
   strokeWeight(1);
 
   //setup Interactions

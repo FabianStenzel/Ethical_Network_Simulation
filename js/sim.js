@@ -52,6 +52,7 @@ class Simulation {
     this.mode = "A"; // gewünschter Modus (A, B, C)
     this.runningMode = null; // aktuell laufender Modus
     this.intervalId = null; // aktives Intervall
+    this.play = true;
   }
 
   initNodes() {
@@ -103,6 +104,18 @@ class Simulation {
   // –––––––––––––––––––––– MODE A    //Fairness
   startModeA() {
     this.messages = [];
+    connectivityRange.classList.add("range-deactive");
+    document
+      .querySelector('label[for="connectivityRange"]')
+      .classList.add("range-deactive");
+    attentionRange.classList.add("range-deactive");
+    document
+      .querySelector('label[for="attentionRange"]')
+      .classList.add("range-deactive");
+    messageRateRange.classList.add("range-deactive");
+    document
+      .querySelector('label[for="messageRateRange"]')
+      .classList.add("range-deactive");
 
     fill(100, 150, 255);
     // INITIAL MESSAGE
@@ -124,6 +137,19 @@ class Simulation {
   }
   // –––––––––––––––––––––– MODE B    //Autonomie
   startModeB() {
+    this.messages = [];
+    connectivityRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="connectivityRange"]')
+      .classList.remove("range-deactive");
+    attentionRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="attentionRange"]')
+      .classList.remove("range-deactive");
+    messageRateRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="messageRateRange"]')
+      .classList.remove("range-deactive");
     fill(15, 150, 25);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
@@ -162,6 +188,19 @@ class Simulation {
   }
   // –––––––––––––––––––––– MODE C //Empathie
   startModeC() {
+    this.messages = [];
+    connectivityRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="connectivityRange"]')
+      .classList.remove("range-deactive");
+    attentionRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="attentionRange"]')
+      .classList.remove("range-deactive");
+    messageRateRange.classList.remove("range-deactive");
+    document
+      .querySelector('label[for="messageRateRange"]')
+      .classList.remove("range-deactive");
     fill(10, 15, 25);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
@@ -170,63 +209,67 @@ class Simulation {
     let postingCycle = map(messageRateRange.value, 0, 100, 3000, 100);
 
     // INITIAL MESSAGE
-    for (let i = 0; i < msgPerNode; i++) {
-      let id2 = floor(random(this.nodes.length));
-      let msgLifeTime = floor(random(1, attentionRange.value));
+    let id2 = floor(random(this.nodes.length));
+    let msgLifeTime = floor(random(1, attentionRange.value));
 
+    this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
+
+    if (floor(random(2)) == floor(random(2))) {
+      setTimeout(() => {
+        for (let i = 0; i < msgPerNode; i++) {
+          let msgLifeTime = floor(random(1, attentionRange.value));
+          this.messages.push(
+            new Message(id2, [id, i], this.simTime, msgLifeTime)
+          );
+        }
+      }, postingCycle);
+    }
+
+    // MESSAGE INTERVAL
+
+    this.intervalId = setInterval(() => {
+      let id = floor(random(1, this.nodes.length));
+
+      let id2 = floor(random(1, this.nodes.length));
+      let msgLifeTime = floor(random(1, attentionRange.value));
       this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
 
       if (floor(random(2)) == floor(random(2))) {
         setTimeout(() => {
-          this.messages.push(new Message(id2, [id], this.simTime, msgLifeTime));
-        }, postingCycle);
-      }
-    }
-    // MESSAGE INTERVAL
-
-    this.intervalId = setInterval(() => {
-      let id = floor(random(this.nodes.length));
-
-      for (let i = 0; i < msgPerNode; i++) {
-        let id2 = floor(random(this.nodes.length));
-        let msgLifeTime = floor(1, random(attentionRange.value));
-        this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
-
-        if (floor(random(2)) == floor(random(2))) {
-          setTimeout(() => {
-            // for (let i = 0; i < msgPerNode; i++) {
+          for (let i = 0; i < msgPerNode; i++) {
+            let msgLifeTime = floor(random(1, attentionRange.value));
             this.messages.push(
-              new Message(id2, [i], this.simTime, msgLifeTime)
+              new Message(id2, [id, i], this.simTime, msgLifeTime)
             );
-            // }
-          }, postingCycle);
-        }
+          }
+        }, postingCycle);
       }
     }, postingCycle);
   }
 
   update() {
-    this.behavior();
-    this.physics();
-    this.cleanupMessages();
-    sim.updateAttention();
-
     //update Clock
-    let now = millis() / 1000;
-    let dt = now - this.lastTick;
-    this.lastTick = now;
-    dt *= this.timeRatio;
-    this.simTime += dt;
-    this.simTime %= 24 * 3600;
+    if (this.play == true) {
+      this.behavior();
+      this.physics();
+      this.cleanupMessages();
+      sim.updateAttention();
+      let now = millis() / 1000;
+      let dt = now - this.lastTick;
+      this.lastTick = now;
+      dt *= this.timeRatio;
+      this.simTime += dt;
+      this.simTime %= 24 * 3600;
 
-    const t = floor(this.simTime);
-    const h = floor(t / 3600);
-    const m = floor((t % 3600) / 60);
-    const s = t % 60;
-    const pad = (v) => v.toString().padStart(2, "0");
-    document.getElementById("simClock").innerText = `${pad(h)}:${pad(m)}:${pad(
-      s
-    )}`;
+      const t = floor(this.simTime);
+      const h = floor(t / 3600);
+      const m = floor((t % 3600) / 60);
+      const s = t % 60;
+      const pad = (v) => v.toString().padStart(2, "0");
+      document.getElementById("simClock").innerText = `${pad(h)}:${pad(
+        m
+      )}:${pad(s)}`;
+    }
   }
 
   physics() {

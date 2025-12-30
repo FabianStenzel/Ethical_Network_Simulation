@@ -19,41 +19,41 @@
           <button id="btnE" class="radioBtn">Empathy</button>
         </section>
         <section id="nodeControl">
-          <h3>Node Settings</h3>
-          <h4>Node Amount</h4>
+          <h3>Settings</h3>
+          <label for="nodeAmountRange">Active Users</label>
           <input
             type="range"
-            name=""
+            name="nodeAmountRange"
             id="nodeAmountRange"
-            min="0"
+            min="3"
             max="500"
             value="10"
             oninput="sim.initNodes()"
           />
-          <h4>Message Reach</h4>
+          <label for="connectivityRange">User Reach</label>
           <input
             type="range"
-            name=""
+            name="connectivityRange"
             id="connectivityRange"
             min="1"
             max="40"
             value="10"
             oninput="sim.initNodes()"
           />
-          <h4>Message Rate</h4>
+          <label for="messageRateRange">Posting Rate</label>
           <input
             type="range"
-            name=""
+            name="messageRateRange"
             id="messageRateRange"
             min="1"
             max="100"
             value="10"
             oninput="sim.initNodes()"
           />
-          <h4>Attention Span</h4>
+          <label for="attentionRange">Attention Span</label>
           <input
             type="range"
-            name=""
+            name="attentionRange"
             id="attentionRange"
             min="1"
             max="100"
@@ -64,8 +64,7 @@
       </section>
       <section id="simControl" class="simControl">
         <button id="minMax" class="iconButton">Min/Max</button>
-        <button class="iconBtn" onclick="sim.initNodes()">Restart</button>
-        <button class="iconBtn">Play/Pause</button>
+        <button id="timeToggle" class="iconBtn">Play/Pause</button>
         <button id="timeRatio" class="iconBtn">1x</button>
         <span id="simClock" style="padding: 20px"> 00:00:00 </span>
       </section>
