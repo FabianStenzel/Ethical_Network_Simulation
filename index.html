@@ -20,7 +20,11 @@
         </section>
         <section id="nodeControl">
           <h3>Settings</h3>
-          <label for="nodeAmountRange">Active Users</label>
+          <label for="nodeAmountRange"
+            >Active Users
+            <span id="nodeAmountLabel" class="numLabel">000</span></label
+          >
+
           <input
             type="range"
             name="nodeAmountRange"
@@ -28,9 +32,11 @@
             min="3"
             max="500"
             value="10"
-            oninput="sim.initNodes()"
           />
-          <label for="connectivityRange">User Reach</label>
+          <label for="connectivityRange"
+            >User Reach
+            <span id="connectivityLabel" class="numLabel">000</span></label
+          >
           <input
             type="range"
             name="connectivityRange"
@@ -40,7 +46,10 @@
             value="10"
             oninput="sim.initNodes()"
           />
-          <label for="messageRateRange">Posting Rate</label>
+          <label for="messageRateRange"
+            >Posting Rate
+            <span id="messageRateLabel" class="numLabel">000</span></label
+          >
           <input
             type="range"
             name="messageRateRange"
@@ -50,7 +59,10 @@
             value="10"
             oninput="sim.initNodes()"
           />
-          <label for="attentionRange">Attention Span</label>
+          <label for="attentionRange"
+            >Attention Span
+            <span id="attentionLabel" class="numLabel">000</span></label
+          >
           <input
             type="range"
             name="attentionRange"

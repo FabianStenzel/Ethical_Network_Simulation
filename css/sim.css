@@ -19,7 +19,7 @@ body {
    
 }
 .simSettings{
-    background-color: rgb(237, 237, 237);
+    background-color: rgba(237, 237, 237,0.9);
     padding: 20px;
     height: 100%;
     border-radius: 10px;
@@ -47,26 +47,72 @@ body {
 
 /* Range */
 
-input[type=range]{
-width: 100%;
+
+label {margin-top: 20px;}
+.numLabel {
+color: gray;
 }
+
+input[type=range]{
+width: 100%;    
+background: lightgray;
+height: 28px;
+appearance: none;
+border-radius: 15px;
+margin: 20px 0px 20px 0px;
+padding: 0px 4px 0px 4px;
+}
+
+input[type=range]:hover
+{
+    cursor:ew-resize;
+}
+input[type='range']::-webkit-slider-thumb:hover{
+     cursor:ew-resize;
+     background-color: gray;
+}
+input[type=range]::-moz-range-thumb:hover {
+    cursor:ew-resize;
+    background-color: gray;
+}
+
+
+input[type='range']::-webkit-slider-thumb {
+	appearance: none;
+	  background: white;
+	/* border: 2px solid blue; */
+	width: 20px;
+	height: 20px;
+	border-radius: 0px;
+	cursor: pointer;
+}
+
+input[type=range]::-moz-range-thumb {
+  background: white;
+  border: 2px solid var(--me-highlight);
+  width: 40px;
+  height: 20px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+
 
 
 /* Button Interactions */
 
 button {
     padding: 8px 16px 8px 16px;
-    background-color: white;
-     border: 1px solid black;
+    background-color: lightgray;
+    border: 0px solid white;
     border-radius: 24px;
 }
 
 .button-active {
-    background-color: black;
-    color: white;
+    background-color: white;
+    color: black;
 }
 
 button:not(.button-active):hover {
-    background-color: lightgray;
-    color: black;
+    background-color: gray;
+    color: white;
 }

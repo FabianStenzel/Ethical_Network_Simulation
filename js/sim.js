@@ -274,7 +274,7 @@ class Simulation {
 
   physics() {
     const damping = 0.98;
-    const repulsionRadius = 60;
+    const repulsionRadius = 80;
     const repulsionStrength = 1.08;
     const messageAttraction = 0.02;
     const maxSpeed = 4;
@@ -398,7 +398,7 @@ class Simulation {
   draw() {
     for (let m of this.messages) {
       const a = messageAlpha(m, this.simTime);
-      const alpha = floor(a * 255);
+      const alpha = floor(a * 100);
 
       for (let t of m.to) {
         const from = this.nodes[m.from];
@@ -419,13 +419,13 @@ class Simulation {
         const ty = lerp(from.pos.y, to.pos.y, p);
 
         // Abstand zur Zielnode
-        const padding = to.displayRadius + 2;
+        const toPadding = to.displayRadius * 2 + 2;
 
         // Linie nur bis kurz vor den Pfeil
-        const lx = tx - nx * padding;
-        const ly = ty - ny * padding;
+        const lx = tx - nx * toPadding;
+        const ly = ty - ny * toPadding;
 
-        stroke(100, alpha);
+        stroke(120, alpha);
         line(from.pos.x, from.pos.y, lx, ly);
 
         // ---------- Pfeil ----------
@@ -449,7 +449,15 @@ class Simulation {
 
     noStroke();
     for (let n of this.nodes) {
-      ellipse(n.pos.x, n.pos.y, n.displayRadius * 2);
+      push();
+      // fill(0, 0, 0, 40);
+
+      ellipse(n.pos.x, n.pos.y, n.displayRadius * 4);
+      pop();
+      push();
+      // fill(0);
+      ellipse(n.pos.x, n.pos.y, 10);
+      pop();
     }
   }
 }

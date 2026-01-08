@@ -36,6 +36,17 @@ function setupUI() {
   const attentionRange = document.querySelector("#attentionRange");
   const messageRateRange = document.querySelector("#messageRateRange");
 
+  const nodeAmountLabel = document.getElementById("nodeAmountlabel");
+  const connectivityLabel = document.getElementById("connectivityLabel");
+  const attentionLabel = document.getElementById("attentionLabel");
+  const messageRateLabel = document.getElementById("messageRateLabel");
+
+  nodeAmountRange.oninput = () => updateUI();
+  connectivityRange.oninput = () => updateUI();
+  attentionRange.oninput = () => updateUI();
+  messageRateRange.oninput = () => updateUI();
+  updateUI();
+
   strokeWeight(1);
 
   //setup Interactions
@@ -52,6 +63,14 @@ function setupUI() {
     simSettings.classList.toggle("simSettings-close");
     windowResized();
   });
+}
+
+function updateUI() {
+  nodeAmountLabel.innerHTML = nodeAmountRange.value;
+  connectivityLabel.innerHTML = connectivityRange.value;
+  attentionLabel.innerHTML = attentionRange.value;
+  messageRateLabel.innerHTML = messageRateRange.value;
+  sim.initNodes();
 }
 
 let camX = 0;
