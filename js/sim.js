@@ -1,3 +1,5 @@
+// const { text } = require("express");
+
 // --------- NODE
 class Node {
   constructor(id, x, y) {
@@ -5,15 +7,15 @@ class Node {
     this.pos = createVector(x, y);
     this.vel = createVector();
     this.acc = createVector();
-    this.radius = 10; // Basisradius
+    this.radius = 4; // Basisradius
     this.attention = 0; // neue Variable
     this.targetAttention = 0; // zum Smoothen
   }
 
   updateRadius() {
     // smooth interpolation: linear oder eased
-    const eased = easeOutCubic(constrain(this.targetAttention / 20, 0, 1)); // 20 = max scaling factor
-    this.attention = lerp(this.attention, eased * 20, 0.002); // 0.02 = sehr langsames Lerp
+    const eased = easeOutCubic(constrain(this.targetAttention / 4, 0, 1)); // 10 = max scaling factor
+    this.attention = lerp(this.attention, eased * 10, 0.002); // 0.02 = sehr langsames Lerp
   }
 
   get displayRadius() {
@@ -27,7 +29,7 @@ class Message {
     this.to = to;
     this.createdAt = createdAt;
     this.lifetime = lifetime;
-    this.flyDuration = 0.2; // Sekunden für den Flug zum Ziel (kurz)
+    this.flyDuration = 0.4; // Sekunden für den Flug zum Ziel (kurz)
   }
   alive(simTime) {
     return simTime - this.createdAt < this.lifetime;
@@ -53,6 +55,9 @@ class Simulation {
     this.runningMode = null; // aktuell laufender Modus
     this.intervalId = null; // aktives Intervall
     this.play = true;
+
+    this.groups = []; // Array von Gruppen (Arrays von Node-IDs)
+    this.groupIntervalId = null;
   }
 
   initNodes() {
@@ -95,62 +100,37 @@ class Simulation {
       clearInterval(this.intervalId);
       this.intervalId = null;
     }
+    if (this.groupIntervalId) {
+      clearInterval(this.groupIntervalId);
+      this.groupIntervalId = null;
+    }
 
     if (mode === "A") this.startModeA();
     if (mode === "B") this.startModeB();
     if (mode === "C") this.startModeC();
     this.runningMode = mode;
   }
-  // –––––––––––––––––––––– MODE A    //Fairness
+  // –––––––––––––––––––––– MODE A    //Autonomie
   startModeA() {
     this.messages = [];
-    connectivityRange.classList.add("range-deactive");
-    document
-      .querySelector('label[for="connectivityRange"]')
-      .classList.add("range-deactive");
-    attentionRange.classList.add("range-deactive");
-    document
-      .querySelector('label[for="attentionRange"]')
-      .classList.add("range-deactive");
-    messageRateRange.classList.add("range-deactive");
-    document
-      .querySelector('label[for="messageRateRange"]')
-      .classList.add("range-deactive");
+    // connectivityRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="connectivityRange"]')
+    //   .classList.remove("range-deactive");
+    // attentionRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="attentionRange"]')
+    //   .classList.remove("range-deactive");
+    // messageRateRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="messageRateRange"]')
+    //   .classList.remove("range-deactive");
+    // fill(15, 150, 25);
 
-    fill(100, 150, 255);
-    // INITIAL MESSAGE
-    let postingCycle = floor(map(this.nodes.length, 0, 500, 10, 1));
-
-    for (let i = 0; i < this.nodes.length; i++) {
-      if (i === 1) continue;
-      this.messages.push(new Message(1, [i], this.simTime, postingCycle));
-    }
-
-    // MESSAGE INTERVAL
-    this.intervalId = setInterval(() => {
-      let id = floor(random(this.nodes.length));
-      for (let i = 0; i < this.nodes.length; i++) {
-        if (i === id) continue;
-        this.messages.push(new Message(id, [i], this.simTime, postingCycle));
-      }
-    }, postingCycle * 1000);
-  }
-  // –––––––––––––––––––––– MODE B    //Autonomie
-  startModeB() {
-    this.messages = [];
-    connectivityRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="connectivityRange"]')
-      .classList.remove("range-deactive");
-    attentionRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="attentionRange"]')
-      .classList.remove("range-deactive");
-    messageRateRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="messageRateRange"]')
-      .classList.remove("range-deactive");
-    fill(15, 150, 25);
+    currentColor = color(100, 150, 255);
+    document.documentElement.style.setProperty("--sim-color", currentColor);
+    fill(currentColor);
+    stroke(currentColor);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
       random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length))
@@ -186,41 +166,98 @@ class Simulation {
       }
     }, postingCycle);
   }
+  // –––––––––––––––––––––– MODE B    //Fairness
+  startModeB() {
+    this.messages = [];
+    // connectivityRange.classList.add("range-deactive");
+    // document
+    //   .querySelector('label[for="connectivityRange"]')
+    //   .classList.add("range-deactive");
+    // attentionRange.classList.add("range-deactive");
+    // document
+    //   .querySelector('label[for="attentionRange"]')
+    //   .classList.add("range-deactive");
+    // messageRateRange.classList.add("range-deactive");
+    // document
+    //   .querySelector('label[for="messageRateRange"]')
+    //   .classList.add("range-deactive");
+    currentColor = color(15, 150, 25);
+    document.documentElement.style.setProperty("--sim-color", currentColor);
+    fill(currentColor);
+    stroke(currentColor);
+    // INITIAL MESSAGE
+    let postingCycle = floor(map(this.nodes.length, 0, 500, 10, 1));
+
+    for (let i = 0; i < this.nodes.length; i++) {
+      if (i === 1) continue;
+      this.messages.push(new Message(1, [i], this.simTime, postingCycle));
+    }
+
+    // MESSAGE INTERVAL
+    this.intervalId = setInterval(() => {
+      let id = floor(random(this.nodes.length));
+      for (let i = 0; i < this.nodes.length; i++) {
+        if (i === id) continue;
+        this.messages.push(new Message(id, [i], this.simTime, postingCycle));
+      }
+    }, postingCycle * 1000);
+  }
   // –––––––––––––––––––––– MODE C //Empathie
   startModeC() {
     this.messages = [];
-    connectivityRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="connectivityRange"]')
-      .classList.remove("range-deactive");
-    attentionRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="attentionRange"]')
-      .classList.remove("range-deactive");
-    messageRateRange.classList.remove("range-deactive");
-    document
-      .querySelector('label[for="messageRateRange"]')
-      .classList.remove("range-deactive");
-    fill(10, 15, 25);
+    // connectivityRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="connectivityRange"]')
+    //   .classList.remove("range-deactive");
+    // attentionRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="attentionRange"]')
+    //   .classList.remove("range-deactive");
+    // messageRateRange.classList.remove("range-deactive");
+    // document
+    //   .querySelector('label[for="messageRateRange"]')
+    //   .classList.remove("range-deactive");
+
+    //Groupes
+    this.createRandomGroups(8);
+
+    // bestehendes Intervall stoppen
+    if (this.groupIntervalId) clearInterval(this.groupIntervalId);
+
+    // alle 20 Sekunden neu mischen
+    this.groupIntervalId = setInterval(() => {
+      this.messages = [];
+      this.createRandomGroups(8);
+    }, 40000);
+
+    // fill(10, 15, 25);
+    currentColor = color(255, 0, 25);
+    document.documentElement.style.setProperty("--sim-color", currentColor);
+    fill(currentColor);
+    stroke(currentColor);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
-      random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length))
+      random(1, map(connectivityRange.value, 1, 40, 1, 7))
     );
-    let postingCycle = map(messageRateRange.value, 0, 100, 3000, 100);
+    let postingCycle = map(messageRateRange.value, 0, 100, 1000, 1);
 
     // INITIAL MESSAGE
-    let id2 = floor(random(this.nodes.length));
+    let target = this.getRandomTargetFromGroup(id);
+    // let id2 = floor(random(this.nodes.length));
     let msgLifeTime = floor(random(1, attentionRange.value));
-
-    this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
-
+    if (target !== null) {
+      this.messages.push(new Message(id, [target], this.simTime, msgLifeTime));
+    }
     if (floor(random(2)) == floor(random(2))) {
       setTimeout(() => {
         for (let i = 0; i < msgPerNode; i++) {
           let msgLifeTime = floor(random(1, attentionRange.value));
-          this.messages.push(
-            new Message(id2, [id, i], this.simTime, msgLifeTime)
-          );
+          let target = this.getRandomTargetFromGroup(id);
+          if (target !== null) {
+            this.messages.push(
+              new Message(target, [id], this.simTime, msgLifeTime)
+            );
+          }
         }
       }, postingCycle);
     }
@@ -230,21 +267,59 @@ class Simulation {
     this.intervalId = setInterval(() => {
       let id = floor(random(1, this.nodes.length));
 
-      let id2 = floor(random(1, this.nodes.length));
+      // let id2 = floor(random(1, this.nodes.length));
+      let target = this.getRandomTargetFromGroup(id);
       let msgLifeTime = floor(random(1, attentionRange.value));
-      this.messages.push(new Message(id, [id2], this.simTime, msgLifeTime));
+      if (target !== null) {
+        this.messages.push(
+          new Message(id, [target], this.simTime, msgLifeTime)
+        );
+      }
 
       if (floor(random(2)) == floor(random(2))) {
         setTimeout(() => {
           for (let i = 0; i < msgPerNode; i++) {
             let msgLifeTime = floor(random(1, attentionRange.value));
-            this.messages.push(
-              new Message(id2, [id, i], this.simTime, msgLifeTime)
-            );
+            let target = this.getRandomTargetFromGroup(id);
+            if (target !== null) {
+              this.messages.push(
+                new Message(target, [id], this.simTime, msgLifeTime)
+              );
+            }
           }
         }, postingCycle);
       }
     }, postingCycle);
+  }
+
+  createRandomGroups(maxSize = 8) {
+    const ids = this.nodes.map((n) => n.id);
+
+    // Shuffle (Fisher–Yates)
+    for (let i = ids.length - 1; i > 0; i--) {
+      const j = floor(random(i + 1));
+      [ids[i], ids[j]] = [ids[j], ids[i]];
+    }
+
+    // In Gruppen schneiden
+    this.groups = [];
+    for (let i = 0; i < ids.length; i += maxSize) {
+      this.groups.push(ids.slice(i, i + maxSize));
+    }
+  }
+  getGroupOfNode(nodeId) {
+    return this.groups.find((g) => g.includes(nodeId));
+  }
+  getRandomTargetFromGroup(fromId) {
+    const group = this.getGroupOfNode(fromId);
+    if (!group || group.length <= 1) return null;
+
+    let target;
+    do {
+      target = random(group);
+    } while (target === fromId);
+
+    return target;
   }
 
   update() {
@@ -273,11 +348,11 @@ class Simulation {
   }
 
   physics() {
-    const damping = 0.98;
-    const repulsionRadius = 80;
-    const repulsionStrength = 1.08;
-    const messageAttraction = 0.02;
-    const maxSpeed = 4;
+    const damping = 0.05;
+    // const repulsionRadius = 250;
+    // const repulsionStrength = 400;
+    const messageAttraction = 10;
+    const maxSpeed = 10;
 
     // reset acceleration
     for (let n of this.nodes) {
@@ -285,21 +360,64 @@ class Simulation {
     }
 
     // node–node repulsion
+    // for (let i = 0; i < this.nodes.length; i++) {
+    //   for (let j = i + 1; j < this.nodes.length; j++) {
+    //     const a = this.nodes[i];
+    //     const b = this.nodes[j];
+
+    //     const dir = p5.Vector.sub(a.pos, b.pos);
+    //     const d = dir.mag();
+
+    //     if (d > 0 && d < repulsionRadius) {
+    //       dir.normalize();
+    //       const f = (1 - d / repulsionRadius) * repulsionStrength;
+
+    //       dir.mult(f);
+
+    //       a.acc.add(dir);
+    //       b.acc.sub(dir);
+    //     }
+    //   }
+    // }
+    // const minNodeDistance = 25; // gewünschter minimaler Abstand
+    // const repulsionRadius = 100; // Radius für "leichte" Abstoßung
+    // const repulsionStrength = 300; // Basisstärke
+
     for (let i = 0; i < this.nodes.length; i++) {
       for (let j = i + 1; j < this.nodes.length; j++) {
         const a = this.nodes[i];
         const b = this.nodes[j];
 
-        const dir = p5.Vector.sub(a.pos, b.pos);
-        const d = dir.mag();
+        const dx = a.pos.x - b.pos.x;
+        const dy = a.pos.y - b.pos.y;
+        const dist = sqrt(dx * dx + dy * dy);
 
-        if (d > 0 && d < repulsionRadius) {
-          dir.normalize();
-          const f = (1 - d / repulsionRadius) * repulsionStrength;
-          dir.mult(f);
+        if (dist > 0) {
+          const nx = dx / dist;
+          const ny = dy / dist;
 
-          a.acc.add(dir);
-          b.acc.sub(dir);
+          // Dynamischer Mindestabstand basierend auf der Node-Größe
+          const minDist = a.displayRadius + b.displayRadius + 50; // +10 als extra padding
+          const repulsionRadius = 100; // Radius für leichte Abstoßung
+          const repulsionStrength = 10;
+
+          let f = 0;
+
+          // starke Abstoßung bei Unterschreitung des Mindestabstands
+          if (dist < minDist) {
+            const overlap = minDist - dist;
+            f += repulsionStrength * pow((overlap / minDist) * 8, 2); // quadratische Steigerung
+          }
+
+          // leichte Abstoßung innerhalb des repulsionRadius
+          if (dist < repulsionRadius && dist > minDist) {
+            f += repulsionStrength * (1 - dist / repulsionRadius) * 0.1; // sanft
+          }
+
+          a.acc.x += nx * f;
+          a.acc.y += ny * f;
+          b.acc.x -= nx * f;
+          b.acc.y -= ny * f;
         }
       }
     }
@@ -339,71 +457,15 @@ class Simulation {
     }
   }
 
-  // draw() {
-  //   for (let m of this.messages) {
-  //     // if (0 <= m.createdAt + m.lifetime - this.simTime <= 1) {
-  //     //   stroke(
-  //     //     floor(map(m.createdAt + m.lifetime - this.simTime, 0, 3, 255, 100))
-  //     //   );
-  //     // } else {
-  //     //   stroke(100);
-  //     // }
-  //     const a = messageAlpha(m, this.simTime);
-  //     const alpha = floor(a * 255);
-  //     push();
-  //     stroke(130, alpha);
-  //     fill(130, alpha);
-
-  //     for (let t of m.to) {
-  //       const from = this.nodes[m.from];
-  //       const to = this.nodes[t];
-
-  //       // --- Flugposition am Anfang
-  //       const p = easeOutQuad(m.getFlyProgress(this.simTime));
-  //       const x = lerp(from.pos.x, to.pos.x, p);
-  //       const y = lerp(from.pos.y, to.pos.y, p);
-  //       line(from.pos.x, from.pos.y, x, y);
-
-  //       //verblassen animation zum Ende
-  //       //Visuell greifbarer machen
-  //       //Pfeil in die richtung bewegen
-
-  //       //start new drawing state
-
-  //       let offset = 14;
-  //       let wing = 8;
-
-  //       const angle = atan2(from.pos.y - y, from.pos.x - x);
-
-  //       translate(x, y);
-  //       rotate(angle - PI);
-
-  //       // Chevron ">"
-  //       stroke(130, alpha);
-  //       strokeWeight(2);
-  //       noFill();
-
-  //       line(0, 0, -offset, -wing);
-  //       line(0, 0, -offset, wing);
-
-  //       pop();
-  //     }
-  //   }
-
-  //   noStroke();
-  //   for (let n of this.nodes) {
-  //     ellipse(n.pos.x, n.pos.y, n.displayRadius * 2);
-  //   }
-  // }
   draw() {
-    for (let m of this.messages) {
-      const a = messageAlpha(m, this.simTime);
-      const alpha = floor(a * 100);
+    // background(255);
 
+    for (let m of this.messages) {
       for (let t of m.to) {
         const from = this.nodes[m.from];
         const to = this.nodes[t];
 
+        // Flugfortschritt
         const p = easeOutQuad(m.getFlyProgress(this.simTime));
 
         // Richtung from → to
@@ -414,49 +476,48 @@ class Simulation {
         const nx = dx / dist;
         const ny = dy / dist;
 
-        // Flugposition
+        // Padding für from- und to-Node
+        const fromPadding = 4 + (from.displayRadius + from.attention) / 2;
+        const toPadding = 4 + (to.displayRadius + to.attention) / 2;
+
+        // Flugposition entlang Linie
         const tx = lerp(from.pos.x, to.pos.x, p);
         const ty = lerp(from.pos.y, to.pos.y, p);
 
-        // Abstand zur Zielnode
-        const toPadding = to.displayRadius * 2 + 2;
+        // Linie mit Padding
+        const sx = from.pos.x + nx * fromPadding; // gekürzter Start
+        const sy = from.pos.y + ny * fromPadding;
+        const ex = tx - nx * toPadding; // gekürztes Ende
+        const ey = ty - ny * toPadding;
 
-        // Linie nur bis kurz vor den Pfeil
-        const lx = tx - nx * toPadding;
-        const ly = ty - ny * toPadding;
-
-        stroke(120, alpha);
-        line(from.pos.x, from.pos.y, lx, ly);
+        push();
+        strokeWeight(2); // Linienstärke
+        stroke(messageAlpha(m, this.simTime));
+        line(sx, sy, ex, ey);
+        pop();
 
         // ---------- Pfeil ----------
         let offset = 4;
         let wing = 4;
 
         push();
-        translate(lx, ly);
-        rotate(atan2(dy, dx));
-
-        strokeWeight(2);
-        noFill();
-
         // Chevron ">"
+        translate(ex, ey);
+        rotate(atan2(dy, dx));
+        stroke(messageAlpha(m, this.simTime));
+        strokeWeight(2);
         line(0, 0, -offset, -wing);
         line(0, 0, -offset, wing);
-
         pop();
       }
     }
 
-    noStroke();
     for (let n of this.nodes) {
       push();
-      // fill(0, 0, 0, 40);
 
-      ellipse(n.pos.x, n.pos.y, n.displayRadius * 4);
-      pop();
-      push();
-      // fill(0);
-      ellipse(n.pos.x, n.pos.y, 10);
+      stroke(255);
+      strokeWeight(2);
+      ellipse(n.pos.x, n.pos.y, n.displayRadius * 2);
       pop();
     }
   }
@@ -470,21 +531,23 @@ function messageAlpha(msg, simTime) {
   const age = simTime - msg.createdAt;
   const t = constrain(age / msg.lifetime, 0, 1); // 0..1
 
-  const fadePortion = 0.01; // 10 %
+  const fadeOutPortion = 0.15;
+  const fadeInPortion = 0.01;
 
-  // fade in
-  if (t < fadePortion) {
-    const n = t / fadePortion; // 0..1
-    return easeInOutCubic(n);
+  // Fade-in (Weiß → currentColor)
+  if (t < fadeInPortion) {
+    const n = t / fadeInPortion; // 0..1
+    return lerpColor(color(255, 255, 255), currentColor, n);
   }
 
-  // fade out
-  if (t > 1 - fadePortion) {
-    const n = (1 - t) / fadePortion; // 1..0
-    return easeInOutCubic(n);
+  // Fade-out (currentColor → Weiß)
+  if (t > 1 - fadeOutPortion) {
+    const n = (t - (1 - fadeOutPortion)) / fadeOutPortion; // 0..1
+    return lerpColor(currentColor, color(255, 255, 255), n);
   }
 
-  return 1;
+  // Mitte der Lebenszeit: volle currentColor
+  return currentColor;
 }
 
 function easeOutCubic(t) {

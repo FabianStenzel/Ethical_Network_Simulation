@@ -6,6 +6,7 @@ function setup() {
   sim = new Simulation();
   setupUI();
   sim.initNodes();
+  currentColor = color(100, 150, 255); // Standardfarbe
   // sim.behavior();
 }
 

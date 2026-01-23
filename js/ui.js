@@ -7,21 +7,22 @@ function setupUI() {
   document.getElementById("btnF").onclick = () => (sim.mode = "B");
   document.getElementById("btnE").onclick = () => (sim.mode = "C");
 
-  const timeRatioButton = document.getElementById("timeRatio");
+  // const timeRatioButton = document.getElementById("timeRatio");
   let timeRatio = 1;
-  timeRatioButton.addEventListener("click", function (e) {
-    timeRatio = timeRatio * 2;
-    if (timeRatio > 10) {
-      timeRatio = 0.25;
-    }
-    timeRatioButton.innerHTML = `${timeRatio}x`;
-    // sim.timeRatio = timeRatio;
-    sim.switchMode(sim.mode);
-  });
+  // timeRatioButton.addEventListener("click", function (e) {
+  //   timeRatio = timeRatio * 2;
+  //   if (timeRatio > 10) {
+  //     timeRatio = 0.25;
+  //   }
+  //   timeRatioButton.innerHTML = `${timeRatio}x`;
+  //   // sim.timeRatio = timeRatio;
+  //   sim.switchMode(sim.mode);
+  // });
 
-  const timeToggleButton = document.getElementById("timeToggle");
+  const timeToggleButton = document.getElementById("simClock");
 
   timeToggleButton.addEventListener("click", function (e) {
+    timeToggleButton.classList.toggle("button-active");
     if (!sim.play) {
       sim.play = true;
       console.log(sim.play);
@@ -53,13 +54,14 @@ function setupUI() {
   const radioBtns = document.querySelectorAll(".radioBtn");
   radioBtns.forEach((btn) => {
     btn.addEventListener("click", function (e) {
-      radioBtns.forEach((b) => b.classList.remove("button-active"));
-      btn.classList.add("button-active");
+      radioBtns.forEach((b) => b.classList.remove("button-active_simColor"));
+      btn.classList.add("button-active_simColor");
     });
   });
   const minMaxBtn = document.querySelector("#minMax");
   const simSettings = document.querySelector("#simSettings");
   minMaxBtn.addEventListener("click", function (e) {
+    minMaxBtn.classList.toggle("button-active");
     simSettings.classList.toggle("simSettings-close");
     windowResized();
   });

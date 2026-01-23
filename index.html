@@ -10,18 +10,30 @@
     <script src="js/ui.js"></script>
   </head>
   <body>
+    <!-- <h1>EP.SIM.</h1> -->
     <aside id="sidebar" class="sidebar">
+      <section id="simControl" class="simControl">
+        <button id="minMax" class="iconButton button-active">
+          Einstellungen
+        </button>
+        <button id="simClock" class="iconBtn">00:00:00</button>
+      </section>
       <section id="simSettings" class="simSettings">
-        <section id="modeControl">
-          <h3>App Presets</h3>
-          <button id="btnA" class="radioBtn button-active">Fairness</button>
-          <button id="btnF" class="radioBtn">Autonomy</button>
-          <button id="btnE" class="radioBtn">Empathy</button>
+        <section id="modeControl" class="modeControl">
+          <h3>Netzwerkstruktur und Algorithmus</h3>
+          <button id="btnA" class="radioBtn button-active_simColor tooltip">Autonomie <span class="tooltiptext">Algorythmische Regel:
+            Netzwerk Struktur:
+          </span></button>
+          <button id="btnF" class="radioBtn tooltip">
+            Gerechtigkeit
+            <span class="tooltiptext">Some tooltip text</span>
+          </button>
+          <button id="btnE" class="radioBtn tooltip">Empathie <span class="tooltiptext">Some tooltip text</span></button>
         </section>
         <section id="nodeControl">
-          <h3>Settings</h3>
+          <h3>Einstellungen</h3>
           <label for="nodeAmountRange"
-            >Active Users
+            >Aktive Nutzer*innen
             <span id="nodeAmountLabel" class="numLabel">000</span></label
           >
 
@@ -30,11 +42,11 @@
             name="nodeAmountRange"
             id="nodeAmountRange"
             min="3"
-            max="500"
+            max="100"
             value="10"
           />
           <label for="connectivityRange"
-            >User Reach
+            >Reichweite
             <span id="connectivityLabel" class="numLabel">000</span></label
           >
           <input
@@ -47,7 +59,7 @@
             oninput="sim.initNodes()"
           />
           <label for="messageRateRange"
-            >Posting Rate
+            >Nachricht Rate
             <span id="messageRateLabel" class="numLabel">000</span></label
           >
           <input
@@ -59,8 +71,9 @@
             value="10"
             oninput="sim.initNodes()"
           />
+
           <label for="attentionRange"
-            >Attention Span
+            >Aufmerksamkeitsspanne
             <span id="attentionLabel" class="numLabel">000</span></label
           >
           <input
@@ -72,15 +85,55 @@
             value="20"
             oninput="sim.initNodes()"
           />
+          <label for="groupeSizeRange"
+            >Gruppengröße
+            <span id="groupeSizeLabel" class="numLabel">000</span></label
+          >
+          <input
+            type="range"
+            name="groupeSizeRange"
+            id="groupeSizeRange"
+            min="1"
+            max="100"
+            value="20"
+            oninput="sim.initNodes()"
+          />
+            <label for="groupIntervalRange"
+            >Dauer bis zufällige Gruppenbildung
+            <span id="groupIntervalSizeLabel" class="numLabel">000</span></label
+          >
+          <input
+            type="range"
+            name="groupIntervalRange"
+            id="groupIntervalRange"
+            min="1"
+            max="100"
+            value="20"
+            oninput="sim.initNodes()"
+          />
         </section>
       </section>
-      <section id="simControl" class="simControl">
-        <button id="minMax" class="iconButton">Min/Max</button>
-        <button id="timeToggle" class="iconBtn">Play/Pause</button>
-        <button id="timeRatio" class="iconBtn">1x</button>
-        <span id="simClock" style="padding: 20px"> 00:00:00 </span>
-      </section>
     </aside>
+
+    <div class="legende">
+      <span
+        ><h5>Aktive Akteure</h5>
+        <div class="ellipse"></div
+      ></span>
+  <span>
+        <h5>Nachrichten</h5>
+        <span style="display: flex;">    
+          <div class="line"></div>
+          <div class="arrow">
+          <div class="arm left"></div>
+          <div class="arm right"></div>
+          </div>
+      </span>
+    
+          </span>
+        </div>
+  
+    </div>
     <div id="canvasContainer" class="canvasContainer"></div>
   </body>
 </html>

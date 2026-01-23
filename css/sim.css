@@ -1,85 +1,165 @@
 
+@font-face {
+  font-family: "Ease";
+  src:
+    url("../fonts/ease/EaseStandardTRIAL-Medium.ttf") format("truetype"), 
+}
+
+@font-face {
+  font-family: "Ease-H1";
+  src:
+    url("../fonts/ease/EaseFullRoundedTRIAL-Black.ttf") format("truetype"), 
+}
+
+
+
+@font-face {
+  font-family: "Alte-Haas-Bold";
+  src:
+    /* url("fonts/MyCustomFont.woff2") format("woff2"), */
+     /* Modern Browsers */
+    /* url("fonts/MyCustomFont.woff") format("woff"),  */
+    /* Pretty good support */
+    url("../fonts/alte_haas_grotesk/AlteHaasGroteskBold.ttf") format("truetype"), 
+    /* Safari, Android, iOS */
+     /* url("fonts/MyCustomFont.eot?#iefix") format("embedded-opentype") */
+    /* , IE6–IE8 */
+    /* url("fonts/MyCustomFont.svg#MyCustomFont") format("svg");  */
+    /* Legacy iOS */
+      /* src: */
+    /* url("fonts/MyCustomFont.eot");  */
+    /* IE9 Compat Modes */
+  /* font-weight: normal; */
+  /* font-style: normal; */
+}
+
+
+:root{
+    /* Color Variables */
+    --light: rgba(227, 227, 227, 0.75);
+    --active: rgb(255, 255, 255);
+    --hover: rgb(128, 128, 128);
+    --default: rgba(211, 211, 211, 0.75);
+     --sim-color: rgb(100,150,255);
+}
+
 /* Layout */
 
 body {
     margin: 0;
     display: flex;
-    font-family: sans-serif;
+    font-family: "Ease", sans-serif;
+}
+
+h1{
+   font-size:40px;
+   line-height: normal;
+   padding: 0;
+   margin: 0;
+   color: black;
+   top:10;
+   right:10px;
+   position: absolute;
+   font-family: "Ease-H1";
+}
+h3{font-size:16px;
+    }
+
+    label {
+    margin-top: 20px;
+width: 100%;
+font-size: 14;}
+
+.numLabel {
+color: gray;
 }
 
 .sidebar {
-    bottom: 100vh;
     display: flex;
     flex-direction: column;
     height: 100vh;
-    padding: 10px;
+    width: 30px;
     position: fixed;
     top: 0;
     left: 0;
    
 }
 .simSettings{
-    background-color: rgba(237, 237, 237,0.9);
-    padding: 20px;
+    background-color: var(--light);
+    padding: 100px 20px 20px 20px;
     height: 100%;
     border-radius: 10px;
     display: flex;
+    position: relative;
     flex-direction: column;
-    width: 20vw;
+    width: 300px;
+    margin: 10px;
+   
 }
 .simSettings-close {
-  
+
     display: none;
     width: 0px !important;
 
 }
 
+.simSettings > section {
+    margin-top: 0px;
+}
+
 .simControl{
-    margin-top: auto;
-        padding: 20px;
-        bottom: 0;
-        
+    padding: 20px 20px 30px 20px;
+    top: 0;
+    z-index: 10;
+    width: 300px;
+    position: absolute;
 }
 
 .range-deactive {
     display: none;
 }
 
+.modeControl {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+
 /* Range */
 
 
-label {margin-top: 20px;}
-.numLabel {
-color: gray;
-}
+
 
 input[type=range]{
 width: 100%;    
-background: lightgray;
+background: var(--default);
 height: 28px;
 appearance: none;
 border-radius: 15px;
-margin: 20px 0px 20px 0px;
+margin: 10px 0px 20px 0px;
 padding: 0px 4px 0px 4px;
+
 }
 
 input[type=range]:hover
 {
     cursor:ew-resize;
+    /* background: var(--hover); */
 }
 input[type='range']::-webkit-slider-thumb:hover{
      cursor:ew-resize;
-     background-color: gray;
+     background-color: var(--hover);
 }
 input[type=range]::-moz-range-thumb:hover {
     cursor:ew-resize;
-    background-color: gray;
+    background-color: var(--hover);
 }
 
 
 input[type='range']::-webkit-slider-thumb {
 	appearance: none;
-	  background: white;
+	  background: var(--active);
 	/* border: 2px solid blue; */
 	width: 20px;
 	height: 20px;
@@ -88,8 +168,8 @@ input[type='range']::-webkit-slider-thumb {
 }
 
 input[type=range]::-moz-range-thumb {
-  background: white;
-  border: 2px solid var(--me-highlight);
+  background: var(--active);
+  border: 0px solid var(--active);
   width: 40px;
   height: 20px;
   border-radius: 15px;
@@ -101,18 +181,100 @@ input[type=range]::-moz-range-thumb {
 /* Button Interactions */
 
 button {
-    padding: 8px 16px 8px 16px;
-    background-color: lightgray;
-    border: 0px solid white;
-    border-radius: 24px;
+    padding: 18px 24px 18px 24px;
+    background-color: var(--default);
+    border: 0px solid var(--active);
+    border-radius: 16px;
+    font-size: 16;
+    font-family: "Ease";
 }
 
 .button-active {
-    background-color: white;
+    background-color: var(--active);
     color: black;
+}
+.button-active_simColor{
+    background-color: var(--sim-color);
+    color: white;
 }
 
 button:not(.button-active):hover {
-    background-color: gray;
-    color: white;
+    background-color: var(--hover);
+    color: var(--active);
 }
+
+
+/* Legende */
+.legende{
+  display: flex;
+  position: absolute;
+  right: 0;
+  flex-direction: column;
+  bottom: 0;
+  padding: 20px;
+}
+
+.legende > span{
+  display: flex;
+  height: 25px;
+    flex-direction: row;
+    align-items: center;
+    gap: 20px;
+}
+
+
+
+.ellipse {
+    width: 30px;       /* Breite der Ellipse */
+    height: 30px;      /* Höhe der Ellipse */
+   background-color:var(--sim-color);
+    border-radius: 100%
+  }
+
+  /* Linie */
+  .line {
+    width: 50px;       /* Länge der Linie */
+    height: 4px;        /* Dicke der Linie */
+    background-color:var(--sim-color);
+    stroke-linecap: round;
+    border-radius: 4px;
+
+  }
+  .arrow {
+  position: absolute;
+  width: 0;
+  height: 0;
+  transform: translate(-50%, -50%) rotate(0deg);
+  
+}
+
+.arm {
+  position: absolute;
+  width: 16px;          
+  height: 4px;
+   background-color:var(--sim-color);
+  transform-origin: left center;
+  stroke-linecap: round;
+  border-radius: 4px;
+}
+
+.arm.left  { transform: rotate(-45deg); }
+.arm.right { transform: rotate(45deg);  }
+
+
+
+.tooltiptext {
+  visibility: hidden;
+  width: 130px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+}
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+
