@@ -5,9 +5,7 @@
     <title></title>
     <link rel="stylesheet" href="css/sim.css" />
     <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/sim.js"></script>
-    <script src="js/ui.js"></script>
+
   </head>
   <body>
     <!-- <h1>EP.SIM.</h1> -->
@@ -21,8 +19,7 @@
       <section id="simSettings" class="simSettings">
         <section id="modeControl" class="modeControl">
           <h3>Netzwerkstruktur und Algorithmus</h3>
-          <button id="btnA" class="radioBtn button-active_simColor tooltip">Autonomie <span class="tooltiptext">Algorythmische Regel:
-            Netzwerk Struktur:
+          <button id="btnA" class="radioBtn button-active_simColor tooltip">Autonomie <span class="tooltiptext">In diesem
           </span></button>
           <button id="btnF" class="radioBtn tooltip">
             Gerechtigkeit
@@ -30,13 +27,13 @@
           </button>
           <button id="btnE" class="radioBtn tooltip">Empathie <span class="tooltiptext">Some tooltip text</span></button>
         </section>
-        <section id="nodeControl">
+        <section >
           <h3>Einstellungen</h3>
-          <label for="nodeAmountRange"
+          <div id="nodeControl" class="nodeControl" >     
+               <label for="nodeAmountRange"
             >Aktive Nutzer*innen
             <span id="nodeAmountLabel" class="numLabel">000</span></label
           >
-
           <input
             type="range"
             name="nodeAmountRange"
@@ -85,22 +82,22 @@
             value="20"
             oninput="sim.initNodes()"
           />
-          <label for="groupeSizeRange"
+          <label for="groupSizeRange"
             >Gruppengröße
-            <span id="groupeSizeLabel" class="numLabel">000</span></label
+            <span id="groupSizeLabel" class="numLabel">000</span></label
           >
           <input
             type="range"
-            name="groupeSizeRange"
-            id="groupeSizeRange"
+            name="groupSizeRange"
+            id="groupSizeRange"
             min="1"
             max="100"
-            value="20"
+            value="8"
             oninput="sim.initNodes()"
           />
             <label for="groupIntervalRange"
             >Dauer bis zufällige Gruppenbildung
-            <span id="groupIntervalSizeLabel" class="numLabel">000</span></label
+            <span id="groupIntervalLabel" class="numLabel">000</span></label
           >
           <input
             type="range"
@@ -111,13 +108,15 @@
             value="20"
             oninput="sim.initNodes()"
           />
+</div>
+       
         </section>
       </section>
     </aside>
 
-    <div class="legende">
+    <div class="legende tool"><span class="tooltiptext">Some tooltip text</span>
       <span
-        ><h5>Aktive Akteure</h5>
+        ><h5>Nutzer*innen</h5>
         <div class="ellipse"></div
       ></span>
   <span>
@@ -136,4 +135,10 @@
     </div>
     <div id="canvasContainer" class="canvasContainer"></div>
   </body>
+  <footer>    
+    <script src="js/main.js"></script>
+    <script src="js/sim.js"></script>
+    <script src="js/ui.js"></script>
+  </footer>
+  
 </html>

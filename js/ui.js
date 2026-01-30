@@ -32,20 +32,12 @@ function setupUI() {
     }
   });
 
-  const nodeAmountRange = document.querySelector("#nodeAmountRange");
-  const connectivityRange = document.querySelector("#connectivityRange");
-  const attentionRange = document.querySelector("#attentionRange");
-  const messageRateRange = document.querySelector("#messageRateRange");
-
-  const nodeAmountLabel = document.getElementById("nodeAmountlabel");
-  const connectivityLabel = document.getElementById("connectivityLabel");
-  const attentionLabel = document.getElementById("attentionLabel");
-  const messageRateLabel = document.getElementById("messageRateLabel");
-
   nodeAmountRange.oninput = () => updateUI();
   connectivityRange.oninput = () => updateUI();
   attentionRange.oninput = () => updateUI();
   messageRateRange.oninput = () => updateUI();
+  groupSizeRange.oninput = () => updateUI();
+  groupIntervalRange.oninput = () => updateUI();
   updateUI();
 
   strokeWeight(1);
@@ -69,9 +61,20 @@ function setupUI() {
 
 function updateUI() {
   nodeAmountLabel.innerHTML = nodeAmountRange.value;
-  connectivityLabel.innerHTML = connectivityRange.value;
-  attentionLabel.innerHTML = attentionRange.value;
-  messageRateLabel.innerHTML = messageRateRange.value;
+  // groupSizeRange.value = nodeAmountRange.value;
+  if (sim.mode === "A") {
+  } else if (sim.mode === "B") {
+    nodeAmountLabel.innerHTML = nodeAmountRange.value;
+    groupSizeRange.value = nodeAmountRange.value;
+  } else {
+  }
+
+  connectivityLabel.innerHTML = `je ⌀${connectivityRange.value} Nachrichten `;
+  attentionLabel.innerHTML = `⌀${attentionRange.value}s`;
+  messageRateLabel.innerHTML = `⌀ 1 alle ${Math.round(map(messageRateRange.value, 0, 100, 3000, 10))}ms`;
+  groupSizeLabel.innerHTML = groupSizeRange.value;
+  groupIntervalLabel.innerHTML = groupIntervalRange.value;
+
   sim.initNodes();
 }
 
@@ -106,6 +109,9 @@ function mouseReleased() {
 }
 
 function mouseWheel(event) {
+  if (event.target.closest("aside")) {
+    return true; // Scroll erlauben
+  }
   const zoomSpeed = 0.001;
 
   let newZoom = zoom * (1 - event.delta * zoomSpeed);

@@ -2,36 +2,15 @@
 @font-face {
   font-family: "Ease";
   src:
-    url("../fonts/ease/EaseStandardTRIAL-Medium.ttf") format("truetype"), 
+    url("../fonts/ease/EaseStandard-Medium.woff2")
 }
 
 @font-face {
   font-family: "Ease-H1";
   src:
-    url("../fonts/ease/EaseFullRoundedTRIAL-Black.ttf") format("truetype"), 
+    url("../fonts/ease/EaseStandard-Black.woff2") 
 }
 
-
-
-@font-face {
-  font-family: "Alte-Haas-Bold";
-  src:
-    /* url("fonts/MyCustomFont.woff2") format("woff2"), */
-     /* Modern Browsers */
-    /* url("fonts/MyCustomFont.woff") format("woff"),  */
-    /* Pretty good support */
-    url("../fonts/alte_haas_grotesk/AlteHaasGroteskBold.ttf") format("truetype"), 
-    /* Safari, Android, iOS */
-     /* url("fonts/MyCustomFont.eot?#iefix") format("embedded-opentype") */
-    /* , IE6–IE8 */
-    /* url("fonts/MyCustomFont.svg#MyCustomFont") format("svg");  */
-    /* Legacy iOS */
-      /* src: */
-    /* url("fonts/MyCustomFont.eot");  */
-    /* IE9 Compat Modes */
-  /* font-weight: normal; */
-  /* font-style: normal; */
-}
 
 
 :root{
@@ -40,7 +19,7 @@
     --active: rgb(255, 255, 255);
     --hover: rgb(128, 128, 128);
     --default: rgba(211, 211, 211, 0.75);
-     --sim-color: rgb(100,150,255);
+     --sim-color: rgb(189,145,255);
 }
 
 /* Layout */
@@ -49,6 +28,7 @@ body {
     margin: 0;
     display: flex;
     font-family: "Ease", sans-serif;
+    overflow:hidden;
 }
 
 h1{
@@ -123,6 +103,11 @@ color: gray;
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.nodeControl {
+   overflow-y: auto;
+  max-height: calc(100vh - 420px);
 }
 
 
@@ -265,14 +250,15 @@ button:not(.button-active):hover {
 
 .tooltiptext {
   visibility: hidden;
-  width: 130px;
+  width: 200px;
   background-color: black;
-  color: #fff;
-  text-align: center;
+  color: white;
+  text-align: left;
   border-radius: 6px;
-  padding: 5px 0;
+  padding: 16px 16px;
   position: absolute;
   z-index: 1;
+  left: 350px;
 }
 .tooltip:hover .tooltiptext {
   visibility: visible;

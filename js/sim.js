@@ -85,7 +85,7 @@ class Simulation {
 
   cleanupMessages() {
     this.messages = this.messages.filter(
-      (msg) => this.simTime < msg.createdAt + msg.lifetime
+      (msg) => this.simTime < msg.createdAt + msg.lifetime,
     );
   }
   behavior() {
@@ -127,15 +127,17 @@ class Simulation {
     //   .classList.remove("range-deactive");
     // fill(15, 150, 25);
 
-    currentColor = color(100, 150, 255);
+    currentColor = autonomieClr;
     document.documentElement.style.setProperty("--sim-color", currentColor);
     fill(currentColor);
     stroke(currentColor);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
-      random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length))
+      random(1, map(connectivityRange.value, 1, 40, 1, this.nodes.length)),
     );
-    let postingCycle = map(messageRateRange.value, 0, 100, 3000, 10);
+    let postingCycle = Math.round(
+      map(messageRateRange.value, 0, 100, 3000, 10),
+    );
 
     // INITIAL MESSAGE
     for (let i = 0; i < msgPerNode; i++) {
@@ -146,8 +148,8 @@ class Simulation {
           id,
           [floor(random(this.nodes.length))],
           this.simTime,
-          msgLifeTime
-        )
+          msgLifeTime,
+        ),
       );
     }
     // MESSAGE INTERVAL
@@ -160,8 +162,8 @@ class Simulation {
             id,
             [floor(random(this.nodes.length))],
             this.simTime,
-            msgLifeTime
-          )
+            msgLifeTime,
+          ),
         );
       }
     }, postingCycle);
@@ -181,7 +183,7 @@ class Simulation {
     // document
     //   .querySelector('label[for="messageRateRange"]')
     //   .classList.add("range-deactive");
-    currentColor = color(15, 150, 25);
+    currentColor = gerechtigkeitClr;
     document.documentElement.style.setProperty("--sim-color", currentColor);
     fill(currentColor);
     stroke(currentColor);
@@ -231,20 +233,22 @@ class Simulation {
     }, 40000);
 
     // fill(10, 15, 25);
-    currentColor = color(255, 0, 25);
+    currentColor = empathieClr;
     document.documentElement.style.setProperty("--sim-color", currentColor);
     fill(currentColor);
     stroke(currentColor);
     let id = floor(random(this.nodes.length));
     let msgPerNode = floor(
-      random(1, map(connectivityRange.value, 1, 40, 1, 7))
+      random(1, map(connectivityRange.value, 1, 40, 1, 7)),
     );
     let postingCycle = map(messageRateRange.value, 0, 100, 1000, 1);
 
     // INITIAL MESSAGE
     let target = this.getRandomTargetFromGroup(id);
     // let id2 = floor(random(this.nodes.length));
+
     let msgLifeTime = floor(random(1, attentionRange.value));
+    console.log(msgLifeTime);
     if (target !== null) {
       this.messages.push(new Message(id, [target], this.simTime, msgLifeTime));
     }
@@ -255,7 +259,7 @@ class Simulation {
           let target = this.getRandomTargetFromGroup(id);
           if (target !== null) {
             this.messages.push(
-              new Message(target, [id], this.simTime, msgLifeTime)
+              new Message(target, [id], this.simTime, msgLifeTime),
             );
           }
         }
@@ -272,7 +276,7 @@ class Simulation {
       let msgLifeTime = floor(random(1, attentionRange.value));
       if (target !== null) {
         this.messages.push(
-          new Message(id, [target], this.simTime, msgLifeTime)
+          new Message(id, [target], this.simTime, msgLifeTime),
         );
       }
 
@@ -283,7 +287,7 @@ class Simulation {
             let target = this.getRandomTargetFromGroup(id);
             if (target !== null) {
               this.messages.push(
-                new Message(target, [id], this.simTime, msgLifeTime)
+                new Message(target, [id], this.simTime, msgLifeTime),
               );
             }
           }
@@ -342,7 +346,7 @@ class Simulation {
       const s = t % 60;
       const pad = (v) => v.toString().padStart(2, "0");
       document.getElementById("simClock").innerText = `${pad(h)}:${pad(
-        m
+        m,
       )}:${pad(s)}`;
     }
   }
