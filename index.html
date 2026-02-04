@@ -19,13 +19,13 @@
       <section id="simSettings" class="simSettings">
         <section id="modeControl" class="modeControl">
           <h3>Netzwerkstruktur und Algorithmus</h3>
-          <button id="btnA" class="radioBtn button-active_simColor tooltip">Autonomie <span class="tooltiptext">In diesem
+          <button id="btnA" class="radioBtn button-active_simColor tooltip">Autonomie <span class="tooltiptext">Hier können Nutzer*innen allen Nutzer*innen mit allen Beiträge teilen.
           </span></button>
           <button id="btnF" class="radioBtn tooltip">
             Gerechtigkeit
-            <span class="tooltiptext">Some tooltip text</span>
+            <span class="tooltiptext">Der Algorithmus teilt einen Zeitraum in die Anzahl der vorhandenen User, die jeweils einen Beitrag verfasst haben. Daraufhin werden in einer zufälligen Reihenfolge alle Beiträge zum gleich langen Anteil für alle Nutzer*innen ausgespielt. </span>
           </button>
-          <button id="btnE" class="radioBtn tooltip">Empathie <span class="tooltiptext">Some tooltip text</span></button>
+          <button id="btnE" class="radioBtn tooltip">Empathie <span class="tooltiptext">Der Algorithmus erstellt Gruppen aus zufälligen Usern und nach einer bestimmten Zeit werden diese wieder neu zusammen gestellt.</span></button>
         </section>
         <section >
           <h3>Einstellungen</h3>
@@ -51,7 +51,7 @@
             name="connectivityRange"
             id="connectivityRange"
             min="1"
-            max="40"
+            max="100"
             value="10"
             oninput="sim.initNodes()"
           />
@@ -116,11 +116,11 @@
 
     <div class="legende tool"><span class="tooltiptext">Some tooltip text</span>
       <span
-        ><h5>Nutzer*innen</h5>
+        ><div class="legendeContainer"><h5>Nutzer*innen</h5></div>
         <div class="ellipse"></div
       ></span>
   <span>
-        <h5>Nachrichten</h5>
+        <div class="legendeContainer"><h5>Nachrichten</h5></div>
         <span style="display: flex;">    
           <div class="line"></div>
           <div class="arrow">

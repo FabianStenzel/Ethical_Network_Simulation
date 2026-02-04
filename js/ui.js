@@ -3,12 +3,31 @@ function windowResized() {
 }
 
 function setupUI() {
-  document.getElementById("btnA").onclick = () => (sim.mode = "A");
-  document.getElementById("btnF").onclick = () => (sim.mode = "B");
-  document.getElementById("btnE").onclick = () => (sim.mode = "C");
+  // document.getElementById("btnA").onclick = () => (sim.mode = "A");
+  // document.getElementById("btnF").onclick = () => (sim.mode = "B");
+  // document.getElementById("btnE").onclick = () => (sim.mode = "C");
+
+  document.getElementById("btnA").onclick = () => setMode("A");
+  document.getElementById("btnF").onclick = () => setMode("B");
+  document.getElementById("btnE").onclick = () => setMode("C");
+
+  // document.getElementById("btnA").onclick = () => {
+  //   sim.mode = "A";
+  //   applyModeSync();
+  // };
+
+  // document.getElementById("btnF").onclick = () => {
+  //   sim.mode = "B";
+  //   applyModeSync();
+  // };
+
+  // document.getElementById("btnE").onclick = () => {
+  //   sim.mode = "C";
+  //   applyModeSync();
+  // };
 
   // const timeRatioButton = document.getElementById("timeRatio");
-  let timeRatio = 1;
+  // let timeRatio = 1;
   // timeRatioButton.addEventListener("click", function (e) {
   //   timeRatio = timeRatio * 2;
   //   if (timeRatio > 10) {
@@ -32,13 +51,31 @@ function setupUI() {
     }
   });
 
-  nodeAmountRange.oninput = () => updateUI();
-  connectivityRange.oninput = () => updateUI();
-  attentionRange.oninput = () => updateUI();
-  messageRateRange.oninput = () => updateUI();
-  groupSizeRange.oninput = () => updateUI();
-  groupIntervalRange.oninput = () => updateUI();
-  updateUI();
+  // nodeAmountRange.oninput = () => updateUI();
+  // connectivityRange.oninput = () => updateUI();
+  // attentionRange.oninput = () => updateUI();
+  // messageRateRange.oninput = () => updateUI();
+  // groupSizeRange.oninput = () => updateUI();
+  // groupIntervalRange.oninput = () => updateUI();
+  ranges.forEach((range) => {
+    range.oninput = () => {
+      syncRanges(range);
+      updateUI();
+    };
+  });
+
+  function applyModeSync() {
+    if (sim.mode === "B") {
+      const masterValue = nodeAmountRange.value;
+
+      ranges.forEach((range) => {
+        range.value = masterValue;
+      });
+    }
+
+    updateUI();
+  }
+  // updateUI();
 
   strokeWeight(1);
 
@@ -57,23 +94,64 @@ function setupUI() {
     simSettings.classList.toggle("simSettings-close");
     windowResized();
   });
+  updateUI();
+}
+
+function setMode(mode) {
+  sim.mode = mode;
+
+  applyModeDefaults(mode);
+
+  if (mode === "B") {
+    syncRanges(nodeAmountRange);
+  }
+
+  updateUI();
+}
+
+function applyModeDefaults(mode) {
+  const d = modeDefaults[mode];
+
+  nodeAmountRange.value = d.nodeAmount;
+  connectivityRange.value = d.connectivity;
+  attentionRange.value = d.attention;
+  messageRateRange.value = d.messageRate;
+  groupSizeRange.value = d.groupSize;
+  groupIntervalRange.value = d.groupInterval;
+}
+
+function syncRanges(source) {
+  if (sim.mode !== "B") return;
+
+  const value = source.value;
+
+  ranges.forEach((range) => {
+    if (range !== source) {
+      range.value = value;
+    }
+  });
 }
 
 function updateUI() {
-  nodeAmountLabel.innerHTML = nodeAmountRange.value;
   // groupSizeRange.value = nodeAmountRange.value;
-  if (sim.mode === "A") {
-  } else if (sim.mode === "B") {
-    nodeAmountLabel.innerHTML = nodeAmountRange.value;
-    groupSizeRange.value = nodeAmountRange.value;
-  } else {
-  }
-
-  connectivityLabel.innerHTML = `je ⌀${connectivityRange.value} Nachrichten `;
-  attentionLabel.innerHTML = `⌀${attentionRange.value}s`;
-  messageRateLabel.innerHTML = `⌀ 1 alle ${Math.round(map(messageRateRange.value, 0, 100, 3000, 10))}ms`;
+  // if (sim.mode === "A") {
+  //   // groupIntervalRange.style.display = "none";
+  // } else if (sim.mode === "B") {
+  //   groupSizeRange.value = nodeAmountRange.value;
+  //   connectivityRange.value = nodeAmountRange.value;
+  //   attentionRange.value = nodeAmountRange.value;
+  //   messageRateRange.value = nodeAmountRange.value;
+  //   nodeAmountRange.value = connectivityRange.value;
+  //   // groupIntervalRange.style.display = "none";
+  // } else {
+  //   // groupIntervalRange.style.display = "block";
+  // }
+  nodeAmountLabel.innerHTML = nodeAmountRange.value;
+  connectivityLabel.innerHTML = `je ⌀ ${connectivityRange.value} Nachrichten `;
+  attentionLabel.innerHTML = `⌀ ${attentionRange.value} s`;
+  messageRateLabel.innerHTML = `⌀ ${Math.round(map(messageRateRange.value, 0, 100, 3000, 10))} ms`;
   groupSizeLabel.innerHTML = groupSizeRange.value;
-  groupIntervalLabel.innerHTML = groupIntervalRange.value;
+  groupIntervalLabel.innerHTML = `${groupIntervalRange.value} s`;
 
   sim.initNodes();
 }

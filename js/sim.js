@@ -221,7 +221,7 @@ class Simulation {
     //   .classList.remove("range-deactive");
 
     //Groupes
-    this.createRandomGroups(8);
+    this.createRandomGroups(groupSizeRange.value);
 
     // bestehendes Intervall stoppen
     if (this.groupIntervalId) clearInterval(this.groupIntervalId);
@@ -229,8 +229,8 @@ class Simulation {
     // alle 20 Sekunden neu mischen
     this.groupIntervalId = setInterval(() => {
       this.messages = [];
-      this.createRandomGroups(8);
-    }, 40000);
+      this.createRandomGroups(groupSizeRange.value);
+    }, groupIntervalRange.value * 1000);
 
     // fill(10, 15, 25);
     currentColor = empathieClr;
@@ -296,7 +296,13 @@ class Simulation {
     }, postingCycle);
   }
 
-  createRandomGroups(maxSize = 8) {
+  createRandomGroups(maxSize) {
+    if (!maxSize) {
+      maxSize = Number(groupSizeRange.value);
+    }
+
+    maxSize = Number(maxSize);
+
     const ids = this.nodes.map((n) => n.id);
 
     // Shuffle (Fisher–Yates)

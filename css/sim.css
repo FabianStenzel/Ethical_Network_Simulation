@@ -133,13 +133,23 @@ input[type=range]:hover
     /* background: var(--hover); */
 }
 input[type=range]::-moz-range-thumb:hover,
-input[type='range']::-webkit-slider-thumb:hover {
+input[type=range]::-webkit-slider-thumb:hover {
     cursor:ew-resize;
     background-color: var(--hover);
 }
 
 
-input[type='range']::-webkit-slider-thumb,
+
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+ background: var(--active);
+  border: 0px solid var(--active);
+  width: 40px;
+  height: 20px;
+  border-radius: 15px;
+  cursor: pointer;
+}
 input[type=range]::-moz-range-thumb  {
 background: var(--active);
   border: 0px solid var(--active);
@@ -206,7 +216,7 @@ button:not(.button-active):hover {
 
   /* Linie */
   .line {
-    width: 50px;       /* Länge der Linie */
+    width: 30px;       /* Länge der Linie */
     height: 4px;        /* Dicke der Linie */
     background-color:var(--sim-color);
     stroke-linecap: round;
@@ -218,12 +228,13 @@ button:not(.button-active):hover {
   width: 0;
   height: 0;
   transform: translate(-50%, -50%) rotate(0deg);
+  transform: translateX(1px);
   
 }
 
 .arm {
   position: absolute;
-  width: 16px;          
+  width: 12px;          
   height: 4px;
    background-color:var(--sim-color);
   transform-origin: left center;
@@ -234,6 +245,7 @@ button:not(.button-active):hover {
 .arm.left  { transform: rotate(-45deg); }
 .arm.right { transform: rotate(45deg);  }
 
+.legendeContainer{width: 74px;}
 
 
 .tooltiptext {
